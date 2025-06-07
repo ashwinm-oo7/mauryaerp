@@ -1,0 +1,115 @@
+.menu-container {
+  width: 100vw;
+  height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  overflow: auto;
+  background-color: #f9f9f9;
+}
+
+.menu-title {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 16px;
+}
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.menu-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+}
+
+.menu-table th,
+.menu-table td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+    /* vertical-align: top; */
+
+}
+
+.menu-table th {
+  background-color: #f0f0f0;
+  font-weight: bold;
+}
+
+.menu-input {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.add-control-btn {
+  margin-right: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+}
+
+
+.btn-edit {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-delete {
+  background-color: #e74c3c;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.btn-save {
+  background-color: #2ecc71;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-cancel {
+  background-color: #95a5a6;
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-left: 8px;
+}
+
+.menu-empty {
+  text-align: center;
+  padding: 20px;
+  font-style: italic;
+  color: #666;
+}
+.control-edit-row,
+.control-view-row {
+  margin-bottom: 4px;
+}
+
+.control-edit-row input,
+.control-edit-row select {
+  margin-right: 6px;
+}
+
+.remove-control-btn {
+  background: none;
+  border: none;
+  color: red;
+  cursor: pointer;
+}

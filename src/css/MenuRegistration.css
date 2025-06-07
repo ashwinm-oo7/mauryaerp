@@ -1,0 +1,90 @@
+.menu-registration-container {
+  max-width: 700px;
+  margin: 30px auto;
+  background: #f8f8f8;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 8px rgba(0,0,0,0.1);
+}
+
+.menu-registration-container h2 {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.menu-form .form-group {
+  margin-bottom: 15px;
+}
+
+.menu-form label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.MenuRegistration-select,
+.menu-form input[type="text"],
+.menu-form input[type="checkbox"] 
+{
+  width: 100%;
+  padding: 8px;
+  box-sizing: border-box;
+}
+
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.save-button {
+  background-color: #28a745;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  width: 100%;
+  font-size: 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background-color: #218838;
+}
+.dynamic-controls {
+  margin-top: 20px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  border-radius: 8px;
+}
+
+.add-buttons button {
+  margin-right: 10px;
+  background-color: #0b5ed7;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.control-row {
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.control-row input,select {
+  margin-left: 10px;
+  padding: 5px;
+}
+
+.control-row button {
+  margin-left: 10px;
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
