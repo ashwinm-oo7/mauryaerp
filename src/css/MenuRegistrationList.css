@@ -1,3 +1,4 @@
+/* Container Setup */
 .menu-container {
   width: 100vw;
   height: 100vh;
@@ -5,111 +6,187 @@
   box-sizing: border-box;
   overflow: auto;
   background-color: #f9f9f9;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
+/* Title */
 .menu-title {
   font-size: 24px;
   font-weight: 600;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+  color: #333;
 }
 
+/* Table Wrapper */
 .table-wrapper {
   width: 100%;
   overflow-x: auto;
 }
 
+/* Table Design */
 .menu-table {
   width: 100%;
   border-collapse: collapse;
   background-color: #fff;
-  box-shadow: 0 0 4px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border-radius: 6px;
+  overflow: hidden;
 }
 
 .menu-table th,
 .menu-table td {
-  padding: 12px;
-  border: 1px solid #ddd;
+  padding: 12px 14px;
+  border: 1px solid #e0e0e0;
   text-align: left;
-    /* vertical-align: top; */
-
+  font-size: 14px;
+  color: #444;
 }
 
 .menu-table th {
   background-color: #f0f0f0;
   font-weight: bold;
+  color: #333;
 }
 
+/* Input Fields */
 .menu-input {
   width: 100%;
-  padding: 6px 8px;
+  padding: 8px 10px;
   font-size: 14px;
   border: 1px solid #ccc;
   border-radius: 4px;
 }
-.add-control-btn {
-  margin-right: 6px;
-  padding: 4px 8px;
-  cursor: pointer;
-}
 
-
-.btn-edit {
-  background-color: #3498db;
-  color: white;
-  border: none;
+/* Button Styling */
+.add-control-btn,
+.btn-edit,
+.btn-delete,
+.btn-save,
+.btn-cancel {
   padding: 6px 12px;
+  font-size: 14px;
+  border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+  white-space: nowrap;
+}
+
+/* Specific Button Colors */
+.btn-edit {
+  background-color: #3498db;
+  color: #fff;
+}
+.btn-edit:hover {
+  background-color: #2980b9;
 }
 
 .btn-delete {
   background-color: #e74c3c;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-left: 8px;
+  color: #fff;
+}
+.btn-delete:hover {
+  background-color: #c0392b;
 }
 
 .btn-save {
   background-color: #2ecc71;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
+  color: #fff;
+}
+.btn-save:hover {
+  background-color: #27ae60;
 }
 
 .btn-cancel {
   background-color: #95a5a6;
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  margin-left: 8px;
+  color: #fff;
+}
+.btn-cancel:hover {
+  background-color: #7f8c8d;
 }
 
+/* Empty State */
 .menu-empty {
   text-align: center;
   padding: 20px;
   font-style: italic;
-  color: #666;
+  color: #888;
 }
+
+/* Control Rows */
 .control-edit-row,
 .control-view-row {
-  margin-bottom: 4px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
 }
 
 .control-edit-row input,
 .control-edit-row select {
-  margin-right: 6px;
+  margin-right: 8px;
+  padding: 6px;
+  font-size: 14px;
+  min-width: 150px;
 }
 
 .remove-control-btn {
   background: none;
   border: none;
-  color: red;
+  color: #e74c3c;
+  font-size: 16px;
   cursor: pointer;
+}
+.remove-control-btn:hover {
+  color: #c0392b;
+}
+
+/* Row Hover Highlight */
+.menu-table tbody tr:hover {
+  background-color: #fdfdfd;
+}
+
+/* Scrollbar Customization */
+.table-wrapper::-webkit-scrollbar {
+  height: 8px;
+}
+.table-wrapper::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
+}
+.table-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .menu-table th,
+  .menu-table td {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .btn-edit,
+  .btn-delete,
+  .btn-save,
+  .btn-cancel {
+    padding: 5px 10px;
+    font-size: 13px;
+  }
+
+  .control-edit-row {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .control-edit-row input,
+  .control-edit-row select {
+    margin-bottom: 6px;
+    width: 100%;
+  }
+}
+/* Action Button Container */
+.action-buttons {
+  display: flex;
+  gap: 8px; /* Adds spacing between edit and delete */
 }

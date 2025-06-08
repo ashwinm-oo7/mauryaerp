@@ -2,15 +2,17 @@ import React, { useEffect, useState, useContext } from "react";
 import { MenuContext } from "../context/MenuContext";
 import axios from "axios";
 import "../css/MenuRegistrationList.css";
+import { useNavigate } from "react-router-dom";
 
 const MenuRegistrationList = () => {
   const { saberpmenu } = useContext(MenuContext);
+  const Navigate = useNavigate();
 
   const [menus, setMenus] = useState([]);
   const [loading, setLoading] = useState(true);
   const [editId, setEditId] = useState(null);
   const [editFormData, setEditFormData] = useState(null);
-
+  console.log("saberpmenu", saberpmenu);
   // const [error, setError] = useState(null);
 
   // const [editFormData, setEditFormData] = useState({
@@ -37,19 +39,24 @@ const MenuRegistrationList = () => {
       setLoading(false);
     }
   };
+  // const getBnameByPid = (pid) => {
+  //   const match = saberpmenu.find((m) => m.pid === pid || m.bname === pid);
+  //   return match ? match.bname : pid;
+  // };
 
-  const startEdit = (menu) => {
-    // Deep copy controls to avoid mutation
-    const controlsCopy = menu.controls
-      ? menu.controls.map((ctrl) => ({ ...ctrl }))
-      : [];
+  // const startEdit = (menu) => {
+  //   const controlsCopy =
+  //     menu.controls?.map((ctrl) => ({
+  //       ...ctrl,
+  //       options: ctrl.options || [],
+  //     })) || [];
 
-    setEditFormData({
-      ...menu,
-      controls: controlsCopy,
-    });
-    setEditId(menu._id);
-  };
+  //   setEditFormData({
+  //     ...menu,
+  //     controls: controlsCopy,
+  //   });
+  //   setEditId(menu._id);
+  // };
 
   const cancelEdit = () => {
     setEditId(null);
@@ -74,7 +81,7 @@ const MenuRegistrationList = () => {
           id: Date.now().toString(),
           controlType: type,
           label: "",
-          options: type === "dropdown" ? ["Option 1"] : [],
+          options: type === "dropdown" ? [] : [],
           sabtable: "",
         },
       ],
@@ -83,7 +90,7 @@ const MenuRegistrationList = () => {
 
   const updateControl = (id, field, value) => {
     const updatedControls = editFormData.controls.map((ctrl) =>
-      ctrl.id === id ? { ...ctrl, [field]: value } : ctrl
+      ctrl._id === id ? { ...ctrl, [field]: value } : ctrl
     );
     setEditFormData((prev) => ({ ...prev, controls: updatedControls }));
   };
@@ -94,16 +101,23 @@ const MenuRegistrationList = () => {
       controls: prev.controls.filter((ctrl) => ctrl.id !== id),
     }));
   };
+  const validateEditForm = () => {
+    if (!editFormData.bname.trim()) return "bname is required.";
+    if (!editFormData.FormType) return "FormType is required.";
+    return null;
+  };
 
   const saveEdit = async () => {
+    const error = validateEditForm();
+    if (error) return alert(error);
+
     try {
       await axios.put(
         `${process.env.REACT_APP_API_URL}/api/menus/updateMenu/${editId}`,
         editFormData
       );
       alert("Menu updated successfully");
-      setEditId(null);
-      setEditFormData(null);
+      cancelEdit();
       fetchMenus();
     } catch (err) {
       console.error("Failed to update menu", err);
@@ -115,7 +129,9 @@ const MenuRegistrationList = () => {
     if (!window.confirm("Are you sure you want to delete this menu?")) return;
 
     try {
-      await axios.delete(`${process.env.REACT_APP_API_URL}/api/menus/${id}`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_URL}/api/menus/deleteMenu/${id}`
+      );
       fetchMenus();
     } catch (err) {
       alert("Failed to delete menu");
@@ -132,7 +148,7 @@ const MenuRegistrationList = () => {
       <table className="menu-table">
         <thead>
           <tr>
-            <th>#</th>
+            <th>SR.No</th>
             <th>bname</th>
             <th>tablename</th>
             <th>MenuName</th>
@@ -263,23 +279,25 @@ const MenuRegistrationList = () => {
                     <>
                       {editFormData.controls?.map((ctrl, i) => (
                         <div key={ctrl.id} className="control-edit-row">
-                          <input
-                            type="text"
-                            value={ctrl.label}
-                            placeholder="Label"
-                            onChange={(e) =>
-                              updateControl(ctrl.id, "label", e.target.value)
-                            }
-                          />
+                          {ctrl.controlType === "input" && (
+                            <input
+                              type="text"
+                              value={ctrl.label}
+                              placeholder="Label"
+                              onChange={(e) =>
+                                updateControl(ctrl._id, "label", e.target.value)
+                              }
+                            />
+                          )}
                           {ctrl.controlType === "dropdown" && (
                             <>
                               <input
                                 type="text"
-                                value={ctrl.options.join(", ")}
+                                value={ctrl?.options?.join(", ")}
                                 placeholder="Comma-separated options"
                                 onChange={(e) =>
                                   updateControl(
-                                    ctrl.id,
+                                    ctrl._id,
                                     "options",
                                     e.target.value
                                       .split(",")
@@ -291,7 +309,7 @@ const MenuRegistrationList = () => {
                                 value={ctrl.sabtable}
                                 onChange={(e) =>
                                   updateControl(
-                                    ctrl.id,
+                                    ctrl._id,
                                     "sabtable",
                                     e.target.value
                                   )
@@ -348,9 +366,8 @@ const MenuRegistrationList = () => {
                       <div key={ctrl.id} className="control-view-row">
                         <strong>{ctrl.controlType}</strong>: {ctrl.label}{" "}
                         {ctrl.controlType === "dropdown" &&
-                          `(Options: ${ctrl.options.join(", ")}, Sabtable: ${
-                            ctrl.sabtable || "-"
-                          })`}
+                          `(Options: ${ctrl.options.join(", ")},\n 
+                          Sabtable: ${ctrl.sabtable || "-"})`}
                       </div>
                     ))
                   )}
@@ -367,20 +384,24 @@ const MenuRegistrationList = () => {
                       </button>
                     </>
                   ) : (
-                    <>
+                    <div className="action-buttons">
                       <button
-                        onClick={() => startEdit(menu)}
+                        // onClick={() => startEdit(menu)}
+                        onClick={() =>
+                          Navigate(`/menuregistration/${menu._id}`)
+                        }
                         className="btn-edit"
                       >
-                        Edit
+                        ✏️ Edit
                       </button>
+
                       <button
                         onClick={() => deleteMenu(menu._id)}
                         className="btn-delete"
                       >
-                        Delete
+                        ❌ Delete
                       </button>
-                    </>
+                    </div>
                   )}
                 </td>
               </tr>

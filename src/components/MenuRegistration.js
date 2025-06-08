@@ -1,11 +1,14 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import "../css/MenuRegistration.css";
 import { MenuContext } from "../context/MenuContext";
 import { Link } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 const MenuRegistration = () => {
   const { saberpmenu } = useContext(MenuContext);
+  const { id } = useParams(); // For edit mode
 
   const [formData, setFormData] = useState({
     bname: "",
@@ -16,6 +19,30 @@ const MenuRegistration = () => {
     Active: true,
     controls: [], // Array of dynamic fields
   });
+  console.log("formData", formData.controls);
+  useEffect(() => {
+    if (id) {
+      const fetchData = async () => {
+        try {
+          const res = await axios.get(
+            `${process.env.REACT_APP_API_URL}/api/menus/getMenuById/${id}`
+          );
+          console.log("fetchData", res.data);
+          const normalizedControls = (res.data.controls || []).map((ctrl) => ({
+            ...ctrl,
+            id: ctrl._id || uuidv4(), // Assign internal id for rendering
+          }));
+
+          setFormData({ ...res.data, controls: normalizedControls });
+        } catch (err) {
+          console.error("Error loading menu:", err);
+          alert("Failed to load menu for editing.");
+        }
+      };
+
+      fetchData();
+    }
+  }, [id]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -59,16 +86,21 @@ const MenuRegistration = () => {
     e.preventDefault();
 
     // Validation logic (same as before)
+    const method = id ? "PUT" : "POST";
+    const url = id
+      ? `${process.env.REACT_APP_API_URL}/api/menus/updateMenu/${id}`
+      : `${process.env.REACT_APP_API_URL}/api/menus`;
+
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/api/menus`, {
-        method: "POST",
+      const res = await fetch(url, {
+        method,
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
 
       if (!res.ok) throw new Error("Failed to save menu");
 
-      alert("Saved successfully!");
+      alert(id ? "✅ Updated successfully!" : "✅ Saved successfully!");
       setFormData({
         bname: "",
         tablename: "",
@@ -86,9 +118,9 @@ const MenuRegistration = () => {
 
   return (
     <div className="menu-registration-container">
-      <h2>Menu Registration</h2>
+      <h2>{id ? "Edit Menu" : "New Menu Registration"}</h2>
       <span>
-        <Link to={`/menuregistrationlist`}>menuregistrationlist</Link>
+        <Link to={`/menuregistrationlist`}>← menuregistrationlist</Link>
       </span>
 
       <form onSubmit={handleSubmit} className="menu-form">
@@ -181,7 +213,7 @@ const MenuRegistration = () => {
                 <>
                   <input
                     type="text"
-                    value={ctrl.options.join(", ")}
+                    value={ctrl?.options?.join(", ")}
                     onChange={(e) =>
                       updateControl(
                         ctrl.id,
@@ -193,7 +225,7 @@ const MenuRegistration = () => {
                   />
 
                   <select
-                    value={ctrl.sabtable}
+                    value={ctrl?.sabtable}
                     onChange={(e) =>
                       updateControl(ctrl.id, "sabtable", e.target.value)
                     }
@@ -210,7 +242,11 @@ const MenuRegistration = () => {
                 </>
               )}
 
-              <button type="button" onClick={() => removeControl(ctrl.id)}>
+              <button
+                type="button"
+                onClick={() => removeControl(ctrl.id)}
+                className="remove-control-btn"
+              >
                 ❌
               </button>
             </div>
@@ -218,7 +254,7 @@ const MenuRegistration = () => {
         </div>
 
         <button type="submit" className="save-button">
-          Save
+          {id ? "Update" : "Save"}
         </button>
       </form>
     </div>

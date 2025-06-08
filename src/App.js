@@ -14,6 +14,8 @@ function App() {
       <Routes>
         <Route path="/" element={<div>Home Page or Dashboard</div>} />
         <Route path="/menuregistration" element={<MenuRegistration />} />
+        <Route path="/menuregistration/:id" element={<MenuRegistration />} />
+
         <Route path="/:bname" element={<FormRenderer />} />
         <Route
           path="/menuregistrationlist"
