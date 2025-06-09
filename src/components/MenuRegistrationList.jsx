@@ -32,7 +32,7 @@ const MenuRegistrationList = () => {
       const res = await axios.get(
         `${process.env.REACT_APP_API_URL}/api/menus/getMenus`
       );
-      setMenus(res.data);
+      setMenus(res?.data?.reverse());
     } catch (err) {
       console.error("Failed to fetch menus", err);
     } finally {
