@@ -79,6 +79,160 @@
   background-color: #dc2626;
 }
 
+
+.df-card-view {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.df-card {
+  background-color: #ffffff;
+  padding: 24px;
+  width: 100%;
+  max-width: 600px;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  margin-bottom: 20px;
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+.df-card-field {
+  margin-bottom: 12px;
+  font-size: 15px;
+  color: #374151;
+}
+
+.df-card-field strong {
+  display: inline-block;
+  width: 150px;
+  font-weight: 600;
+  color: #111827;
+}
+
+.df-card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.df-card-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+}
+
+.df-card-nav button {
+  padding: 6px 14px;
+  border-radius: 6px;
+  border: 1px solid #d1d5db;
+  background-color: #f9fafb;
+  color: #1f2937;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.df-card-nav button:hover:not(:disabled) {
+  background-color: #e0e7ff;
+  border-color: #3b82f6;
+  color: #1d4ed8;
+}
+
+.df-card-nav span {
+  font-weight: 500;
+  color: #4b5563;
+}
+.df-card-nav button:disabled {
+  background-color: #e5e7eb; /* light gray */
+  color: #9ca3af;            /* muted text */
+  cursor: not-allowed;
+  border-color: #d1d5db;
+}
+.vs-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.vs-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 16px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.vs-card-content {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.vs-field {
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px dashed #eee;
+  padding: 4px 0;
+  font-size: 14px;
+}
+
+.vs-label {
+  font-weight: 600;
+  color: #4b5563;
+  flex: 1;
+}
+
+.vs-value {
+  flex: 1;
+  text-align: right;
+  word-break: break-word;
+}
+
+.vs-card-actions {
+  margin-top: 12px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.vs-btn {
+  padding: 6px 10px;
+  font-size: 13px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.vs-btn-edit {
+  background-color: #2563eb;
+  color: white;
+}
+
+.vs-btn-delete {
+  background-color: #dc2626;
+  color: white;
+}
+
+.vs-btn:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+/* Optional animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
 /* Responsive */
 @media (max-width: 768px) {
   .df-table,
@@ -121,4 +275,177 @@
   .df-action-cell {
     justify-content: flex-end;
   }
+}
+/* Core Wrapper */
+.df-card-view,
+.vs-cards,
+.df-table-wrapper {
+  margin-top: 20px;
+}
+
+/* Single Card View */
+.df-card {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 20px;
+  max-width: 500px;
+  margin: 0 auto;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+}
+
+.df-card-field {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+  padding-bottom: 4px;
+  border-bottom: 1px dashed #e5e7eb;
+}
+
+.df-card-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+/* Grid Cards */
+.vs-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.vs-card {
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.vs-card-content {
+  margin-bottom: 10px;
+}
+
+.vs-field {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  border-bottom: 1px dashed #d1d5db;
+}
+
+.vs-label {
+  font-weight: 500;
+  color: #374151;
+}
+
+.vs-value {
+  color: #4b5563;
+}
+
+/* Card Buttons */
+.df-btn,
+.vs-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.df-btn-edit,
+.vs-btn-edit {
+  background-color: #0923cf;
+  color: #ffffff;
+}
+
+.df-btn-delete,
+.vs-btn-delete {
+  background-color: #f70101;
+  color: #ffffff;
+}
+
+.df-btn:hover,
+.vs-btn:hover {
+  opacity: 0.6;
+}
+
+/* Navigation Buttons */
+.df-card-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.df-card-nav button {
+  font-weight: 500;
+}
+
+/* Table Styling */
+.df-table-wrapper {
+  overflow-x: auto;
+}
+
+.df-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #fff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+}
+
+.df-thead {
+  background-color: #f3f4f6;
+}
+
+.df-th,
+.df-td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.df-action-cell {
+  display: flex;
+  gap: 8px;
+}
+
+/* Dropdowns, Inputs */
+select,
+input[type="text"] {
+  font-size: 14px;
+  padding: 6px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  outline: none;
+}
+
+select:focus,
+input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+/* View Switcher Buttons (optional) */
+.view-switcher {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.view-switcher button {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  background-color: #fff;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.view-switcher .active {
+  background-color: #e0f2fe;
+  border-color: #3b82f6;
+  font-weight: bold;
 }
