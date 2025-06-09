@@ -1,0 +1,69 @@
+.dynamic-form-container {
+  max-width: 1150px;
+  margin: 20px auto;
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+  padding: 24px 30px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #1f2937;
+}
+
+.dynamic-form-tabs {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  border-bottom: 2px solid #e5e7eb;
+}
+
+.dynamic-form-tabs button {
+  background: none;
+  border: none;
+  padding: 10px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #6b7280;
+  cursor: pointer;
+  border-bottom: 3px solid transparent;
+  transition: all 0.25s ease-in-out;
+  border-radius: 6px 6px 0 0;
+}
+
+.dynamic-form-tabs button:hover {
+  color: #2563eb;
+  border-bottom-color: #93c5fd;
+}
+
+.dynamic-form-tabs button.active {
+  color: #1d4ed8;
+  font-weight: 700;
+  border-bottom-color: #2563eb;
+  background-color: #eff6ff;
+  box-shadow: inset 0 -3px 0 #2563eb;
+}
+
+
+@media (max-width: 600px) {
+  .dynamic-form-container {
+    padding: 16px 20px;
+    margin: 15px;
+  }
+  
+  .dynamic-form-tabs {
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .dynamic-form-tabs button {
+    width: 100%;
+    text-align: center;
+    border-radius: 6px;
+    border-bottom: none;
+    box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+  }
+  
+  .dynamic-form-tabs button.active {
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    border-bottom: none;
+  }
+}

@@ -1,0 +1,124 @@
+.df-list-container {
+  padding: 20px;
+  background-color: #f9fafb;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  max-width: 100%;
+  overflow-x: auto;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.df-list-title {
+  font-size: 20px;
+  font-weight: bold;
+  margin-bottom: 16px;
+  color: #111827;
+}
+
+.df-table-wrapper {
+  overflow-x: auto;
+}
+
+.df-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.df-th,
+.df-td {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 14px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.df-th {
+  background-color: #f3f4f6;
+  color: #1f2937;
+  font-weight: 600;
+}
+
+.df-tr:hover {
+  background-color: #f0f9ff;
+}
+
+.df-action-cell {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.df-btn {
+  padding: 6px 12px;
+  border: none;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease-in-out;
+}
+
+.df-btn-edit {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.df-btn-edit:hover {
+  background-color: #2563eb;
+}
+
+.df-btn-delete {
+  background-color: #ef4444;
+  color: white;
+}
+
+.df-btn-delete:hover {
+  background-color: #dc2626;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .df-table,
+  .df-thead,
+  .df-tbody,
+  .df-tr,
+  .df-th,
+  .df-td {
+    display: block;
+  }
+
+  .df-tr {
+    margin-bottom: 10px;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #e5e7eb;
+    padding: 10px;
+  }
+
+  .df-td {
+    position: relative;
+    padding: 8px 12px;
+    text-align: right;
+  }
+
+  .df-td::before {
+    content: attr(data-label);
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    font-weight: 600;
+    color: #6b7280;
+    text-align: left;
+  }
+
+  .df-th {
+    display: none;
+  }
+
+  .df-action-cell {
+    justify-content: flex-end;
+  }
+}

@@ -2,6 +2,8 @@ import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { MenuContext } from "../context/MenuContext";
 import DynamicForm from "../components/DynamicForm";
+import DynamicFormList from "./DynamicFormList";
+import DynamicFormContainer from "./DynamicFormContainer";
 
 const FormRenderer = () => {
   const { bname } = useParams();
@@ -21,7 +23,9 @@ const FormRenderer = () => {
   return (
     <div className="p-4">
       <h2 className="text-xl font-semibold mb-4">{decodedBname}</h2>
-      <DynamicForm formMeta={formMeta} />
+      {/* <DynamicForm formMeta={formMeta} />
+      <DynamicFormList formMeta={formMeta} /> */}
+      <DynamicFormContainer formMeta={formMeta} />
     </div>
   );
 };

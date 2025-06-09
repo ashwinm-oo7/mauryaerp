@@ -120,7 +120,9 @@ const MenuRegistration = () => {
     <div className="menu-registration-container">
       <h2>{id ? "Edit Menu" : "New Menu Registration"}</h2>
       <span>
-        <Link to={`/menuregistrationlist`}>← menuregistrationlist</Link>
+        <Link to="/menuregistrationlist" className="menu-back-link">
+          ← menuregistrationlist
+        </Link>
       </span>
 
       <form onSubmit={handleSubmit} className="menu-form">

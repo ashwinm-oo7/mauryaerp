@@ -1,13 +1,31 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import axios from "axios";
-
-const DynamicForm = ({ formMeta }) => {
+import "../css/DynamicForm.css";
+const DynamicForm = ({
+  formMeta,
+  initialData,
+  onSubmitDone,
+  onDirtyChange,
+}) => {
+  const [formData, setFormData] = useState(initialData || {});
   const { controls = [], tablename } = formMeta;
-  const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
   const [dropdownOptions, setDropdownOptions] = useState({});
+  const originalData = useRef(initialData || {});
+
+  // ADD THIS useEffect to listen for changes in initialData
+  useEffect(() => {
+    setFormData(initialData || {});
+    originalData.current = initialData || {};
+  }, [initialData]);
+  useEffect(() => {
+    const hasChanges = Object.keys(formData).some(
+      (key) => formData[key] !== originalData.current[key]
+    );
+    if (onDirtyChange) onDirtyChange(hasChanges);
+  }, [formData]);
 
   // Fetch sabtable data for dropdowns
   useEffect(() => {
@@ -49,14 +67,22 @@ const DynamicForm = ({ formMeta }) => {
       setMsg("");
       setError("");
       const payload = { ...formData };
-
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/mastertable/save/${tablename}`,
-        payload
-      );
+      let response;
+      if (initialData?._id) {
+        response = await axios.put(
+          `${process.env.REACT_APP_API_URL}/api/mastertable/update/${tablename}/${initialData._id}`,
+          payload
+        );
+      } else {
+        response = await axios.post(
+          `${process.env.REACT_APP_API_URL}/api/mastertable/save/${tablename}`,
+          payload
+        );
+      }
       console.log("response", response);
       setMsg("✅ Saved successfully!");
       setFormData({});
+      if (onSubmitDone) onSubmitDone();
     } catch (err) {
       const errorMsg =
         err.response?.data?.error || "❌ Error saving data. Please try again.";
@@ -106,7 +132,9 @@ const DynamicForm = ({ formMeta }) => {
 
             return (
               <div key={label}>
-                <label className="block font-medium">{label}</label>
+                <label className="block font-medium">
+                  {options} {label}
+                </label>
                 <select
                   className="border px-2 py-1 rounded w-full"
                   value={formData[label] || ""}
@@ -131,13 +159,34 @@ const DynamicForm = ({ formMeta }) => {
         }
       })}
 
+      {/* <div className="DynamicForm-form-buttons"> */}
       <button
         type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
+        className="DynamicForm-submit-button"
         disabled={loading}
       >
-        {loading ? "Saving..." : "Save"}
+        {loading
+          ? initialData?._id
+            ? "Updating..."
+            : "Saving..."
+          : initialData?._id
+          ? "Update"
+          : "Save"}
       </button>
+
+      {initialData?._id && (
+        <button
+          type="button"
+          className="DynamicForm-cancel-button"
+          onClick={() => {
+            setFormData({});
+            if (onSubmitDone) onSubmitDone(); // switch to 'add' mode
+          }}
+        >
+          ❌ Cancel
+        </button>
+      )}
+      {/* </div> */}
 
       {msg && <div className="mt-2 text-green-600">{msg}</div>}
       {error && <div className="mt-2 text-red-600">{error}</div>}
