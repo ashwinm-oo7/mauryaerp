@@ -1,8 +1,8 @@
 import React, { useContext } from "react";
 import { useParams } from "react-router-dom";
 import { MenuContext } from "../context/MenuContext";
-import DynamicForm from "../components/DynamicForm";
-import DynamicFormList from "./DynamicFormList";
+// import DynamicForm from "../components/DynamicForm";
+// import DynamicFormList from "./DynamicFormList";
 import DynamicFormContainer from "./DynamicFormContainer";
 
 const FormRenderer = () => {

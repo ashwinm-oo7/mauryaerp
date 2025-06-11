@@ -25,6 +25,7 @@ const DynamicForm = ({
       (key) => formData[key] !== originalData.current[key]
     );
     if (onDirtyChange) onDirtyChange(hasChanges);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
   // Fetch sabtable data for dropdowns

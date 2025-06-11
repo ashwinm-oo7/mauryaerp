@@ -61,7 +61,7 @@ const MenuRegistration = () => {
           id: uuidv4(),
           controlType: type, // 'input' | 'checkbox' | 'dropdown'
           label: "",
-          options: type === "dropdown" ? ["Option 1"] : [],
+          options: ["dropdown", "input"].includes(type) ? [] : [],
           sabtable: "", // only relevant for dropdown
         },
       ],
@@ -101,15 +101,17 @@ const MenuRegistration = () => {
       if (!res.ok) throw new Error("Failed to save menu");
 
       alert(id ? "✅ Updated successfully!" : "✅ Saved successfully!");
-      setFormData({
-        bname: "",
-        tablename: "",
-        MenuName: "",
-        ParentSubmenuName: "",
-        FormType: "M",
-        Active: true,
-        controls: [],
-      });
+      if (!id) {
+        setFormData({
+          bname: "",
+          tablename: "",
+          MenuName: "",
+          ParentSubmenuName: "",
+          FormType: "M",
+          Active: true,
+          controls: [],
+        });
+      }
     } catch (err) {
       console.error(err);
       alert("Error saving menu.");
@@ -206,11 +208,29 @@ const MenuRegistration = () => {
               <label>{ctrl.controlType} Label:</label>
               <input
                 type="text"
+                placeholder="column name"
                 value={ctrl.label}
                 onChange={(e) =>
                   updateControl(ctrl.id, "label", e.target.value)
                 }
               />
+              {ctrl.controlType === "input" && (
+                <>
+                  <input
+                    type="text"
+                    value={ctrl?.options?.join(", ")}
+                    onChange={(e) =>
+                      updateControl(
+                        ctrl.id,
+                        "options",
+                        e.target.value.split(",").map((opt) => opt.trim())
+                      )
+                    }
+                    placeholder="Label Name"
+                  />
+                </>
+              )}
+
               {ctrl.controlType === "dropdown" && (
                 <>
                   <input
@@ -223,7 +243,7 @@ const MenuRegistration = () => {
                         e.target.value.split(",").map((opt) => opt.trim())
                       )
                     }
-                    placeholder="Comma-separated options"
+                    placeholder="Label Name"
                   />
 
                   <select
