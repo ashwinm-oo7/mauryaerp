@@ -25,7 +25,7 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
             process.env.REACT_APP_API_URL
           }/api/mastertable/options/${tablename.replace(/\s/g, "")}/all`
         );
-        setData(res.data.data || []);
+        setData(res?.data?.data?.reverse() || []);
       } catch (err) {
         console.error("Fetch data error:", err);
       }

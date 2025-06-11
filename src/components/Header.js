@@ -12,7 +12,8 @@ const Header = () => {
   } = useContext(MenuContext);
 
   const [openMenuId, setOpenMenuId] = useState(null);
-  const [openSubmenuIds, setOpenSubmenuIds] = useState(new Set());
+  const [openSubmenuId, setOpenSubmenuId] = useState(null);
+
   const menuRefs = useRef({});
 
   useEffect(() => {
@@ -26,7 +27,7 @@ const Header = () => {
       }
       if (!clickedInside) {
         setOpenMenuId(null);
-        setOpenSubmenuIds(new Set());
+        setOpenSubmenuId(null);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -35,19 +36,11 @@ const Header = () => {
 
   const handleMenuClick = (menuId) => {
     setOpenMenuId((prev) => (prev === menuId ? null : menuId));
-    setOpenSubmenuIds(new Set());
+    setOpenSubmenuId(new Set());
   };
 
   const handleSubmenuClick = (submenuId) => {
-    setOpenSubmenuIds((prev) => {
-      const updated = new Set(prev);
-      if (updated.has(submenuId)) {
-        updated.delete(submenuId);
-      } else {
-        updated.add(submenuId);
-      }
-      return updated;
-    });
+    setOpenSubmenuId((prev) => (prev === submenuId ? null : submenuId));
   };
 
   // Renders nested submenus and forms for a given parent name.
@@ -70,7 +63,7 @@ const Header = () => {
               className="header__dropdown-link"
               onClick={() => {
                 setOpenMenuId(null);
-                setOpenSubmenuIds(new Set());
+                setOpenSubmenuId(null);
               }}
             >
               {form.bname}
@@ -88,7 +81,7 @@ const Header = () => {
             }}
           >
             {submenu.bname}
-            {openSubmenuIds.has(submenu._id) &&
+            {openSubmenuId === submenu._id &&
               renderNestedSubmenus(submenu.bname, menuName)}
           </li>
         ))}
@@ -153,7 +146,7 @@ const Header = () => {
                       }}
                     >
                       {submenu.bname} <span className="arrow">»</span>
-                      {openSubmenuIds.has(submenu._id) &&
+                      {openSubmenuId === submenu._id &&
                         renderNestedSubmenus(submenu.bname, menu.bname)}
                     </li>
                   ))}
@@ -165,7 +158,7 @@ const Header = () => {
                         className="header__dropdown-link"
                         onClick={() => {
                           setOpenMenuId(null);
-                          setOpenSubmenuIds(new Set());
+                          setOpenSubmenuId(null);
                         }}
                       >
                         {form.bname}
