@@ -51,14 +51,6 @@ const DynamicFormContainer = ({ formMeta }) => {
         >
           ➕ Add New
         </button>
-
-        <button
-          onClick={() => handleTabClick("list")}
-          className={activeTab === "list" ? "active" : ""}
-        >
-          📋 List Records
-        </button>
-
         {editingData && (
           <button
             onClick={() => handleTabClick("update")}
@@ -67,6 +59,12 @@ const DynamicFormContainer = ({ formMeta }) => {
             🛠️ Update
           </button>
         )}
+        <button
+          onClick={() => handleTabClick("list")}
+          className={activeTab === "list" ? "active" : ""}
+        >
+          📋 List Records
+        </button>
       </div>
 
       {(activeTab === "add" || activeTab === "update") && (

@@ -105,7 +105,9 @@ const DynamicForm = ({
           case "input":
             return (
               <div key={label}>
-                <label className="block font-medium">{label}</label>
+                <label className="block font-medium">
+                  {options}:({label})
+                </label>
                 <input
                   type="text"
                   className="border px-2 py-1 rounded w-full"
@@ -134,7 +136,7 @@ const DynamicForm = ({
             return (
               <div key={label}>
                 <label className="block font-medium">
-                  {options} {label}
+                  {options}:({label})
                 </label>
                 <select
                   className="border px-2 py-1 rounded w-full"
@@ -160,34 +162,40 @@ const DynamicForm = ({
         }
       })}
 
-      {/* <div className="DynamicForm-form-buttons"> */}
-      <button
-        type="submit"
-        className="DynamicForm-submit-button"
-        disabled={loading}
+      <div
+        className={
+          initialData?._id
+            ? "DynamicForm-form-buttons updateextra "
+            : "DynamicForm-form-buttons noextra "
+        }
       >
-        {loading
-          ? initialData?._id
-            ? "Updating..."
-            : "Saving..."
-          : initialData?._id
-          ? "Update"
-          : "Save"}
-      </button>
-
-      {initialData?._id && (
         <button
-          type="button"
-          className="DynamicForm-cancel-button"
-          onClick={() => {
-            setFormData({});
-            if (onSubmitDone) onSubmitDone(); // switch to 'add' mode
-          }}
+          type="submit"
+          className="DynamicForm-submit-button"
+          disabled={loading}
         >
-          ❌ Cancel
+          {loading
+            ? initialData?._id
+              ? "🔄 Updating..."
+              : "💾 Saving..."
+            : initialData?._id
+            ? "🔄 Update"
+            : "💾 Save"}
         </button>
-      )}
-      {/* </div> */}
+
+        {initialData?._id && (
+          <button
+            type="button"
+            className="DynamicForm-cancel-button"
+            onClick={() => {
+              setFormData({});
+              if (onSubmitDone) onSubmitDone(); // switch to 'add' mode
+            }}
+          >
+            ❌ Cancel
+          </button>
+        )}
+      </div>
 
       {msg && <div className="mt-2 text-green-600">{msg}</div>}
       {error && <div className="mt-2 text-red-600">{error}</div>}

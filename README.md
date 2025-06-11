@@ -42,6 +42,24 @@ Menu
 
 In the project directory, you can run:
 
+## Symbol
+| Symbol | Meaning            |
+| ------ | ------------------ |
+| ♻️     | Refresh/Update     |
+| 🔄     | Update/Reload      |
+| 🔃     | Sync/Update        |
+| ✏️     | Edit/Modify        |
+| 📝     | Edit with context  |
+| 🛠️    | Maintenance/Update |
+
+| Symbol | Meaning                                 |
+| ------ | --------------------------------------- |
+| 💾     | Save (classic floppy disk)              |
+| ✅      | Confirm/Save                            |
+| 📥     | Save/Download                           |
+| 💿     | Save (CD metaphor, less common today)   |
+| 📤     | Upload (used if saving to cloud/server) |
+
 ### `npm start`
 
 Runs the app in the development mode.\

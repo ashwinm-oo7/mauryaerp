@@ -1,5 +1,6 @@
-import React, { createContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { LoadingContext } from "./LoadingContext";
 
 export const MenuContext = createContext();
 
@@ -9,9 +10,12 @@ export const MenuProvider = ({ children }) => {
   const [nestedSubmenusMap, setNestedSubmenusMap] = useState({});
   const [forms, setForms] = useState([]);
   const [saberpmenu, setSaberpmenu] = useState([]);
+  const { setIsLoading } = useContext(LoadingContext);
 
   useEffect(() => {
     const fetchMenus = async () => {
+      setIsLoading(true);
+
       try {
         const res = await axios.get(
           `${process.env.REACT_APP_API_URL}/api/menus/getMenus`
@@ -82,6 +86,8 @@ export const MenuProvider = ({ children }) => {
         setForms(forms);
       } catch (err) {
         console.error("Failed to fetch menus:", err);
+      } finally {
+        setIsLoading(false);
       }
     };
 
