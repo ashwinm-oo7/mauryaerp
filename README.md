@@ -21,7 +21,8 @@ Master
 | ✅ B  | ✅ Yes      | ✅ Yes               | ✅ Yes       | Form is inside a Nested Submenu            |
 | ✅ C  | ✅ Yes      | ❌ No                | ❌ No        | Submenu under Menu                         |
 | ✅ D  | ✅ Yes      | ✅ Yes               | ❌ No        | Nested Submenu under another Submenu       |
-| ✅ E  | ❌ No       | ❌ No                | ✅ Yes       | Form directly under Menu (no submenu)      |
+| ✅ E  | ❌ No       | ❌ No                | ✅ Yes       | Form directly under Menu (no submenu)   
+| ✅ F  | ✅ Yes      | ❌ No                |  ❌ No       | Menu only    
 
 ✅ Menu Structure:
 Menu
@@ -30,7 +31,7 @@ Menu
 │
 ├── Direct Form(s)
 
-2) And you want to ensure it supports nesting like:
+1) And you want to ensure it supports nesting like:
 Menu
 ├── Submenu
 │   ├── Submenu1

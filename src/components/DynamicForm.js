@@ -1,6 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "../css/DynamicForm.css";
+import { LoadingContext } from "../context/LoadingContext";
 const DynamicForm = ({
   formMeta,
   initialData,
@@ -9,7 +11,9 @@ const DynamicForm = ({
 }) => {
   const [formData, setFormData] = useState(initialData || {});
   const { controls = [], tablename } = formMeta;
-  const [loading, setLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
+  const { isLoading, setIsLoading } = useContext(LoadingContext);
+
   const [msg, setMsg] = useState("");
   const [error, setError] = useState("");
   const [dropdownOptions, setDropdownOptions] = useState({});
@@ -33,6 +37,7 @@ const DynamicForm = ({
     const fetchDropdownData = async () => {
       for (const control of controls) {
         if (control.controlType === "dropdown" && control.sabtable) {
+          setIsLoading(true);
           try {
             const res = await axios.get(
               `${process.env.REACT_APP_API_URL}/api/mastertable/options/${control.sabtable}`
@@ -43,6 +48,8 @@ const DynamicForm = ({
             }));
           } catch (err) {
             console.error("Error fetching dropdown options:", err);
+          } finally {
+            setIsLoading(false);
           }
         }
       }
@@ -64,7 +71,7 @@ const DynamicForm = ({
     }
 
     try {
-      setLoading(true);
+      setIsLoading(true);
       setMsg("");
       setError("");
       const payload = { ...formData };
@@ -92,7 +99,7 @@ const DynamicForm = ({
       setMsg("❌ Error saving data.");
       console.error(err);
     } finally {
-      setLoading(false);
+      setIsLoading(false);
     }
   };
 
@@ -172,9 +179,9 @@ const DynamicForm = ({
         <button
           type="submit"
           className="DynamicForm-submit-button"
-          disabled={loading}
+          disabled={isLoading}
         >
-          {loading
+          {isLoading
             ? initialData?._id
               ? "🔄 Updating..."
               : "💾 Saving..."

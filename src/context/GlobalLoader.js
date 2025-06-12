@@ -11,7 +11,7 @@ const GlobalLoader = () => {
   return (
     <div className="global-loader-backdrop">
       <div className="global-loader-circle" />
-      <div className="global-loader-text">ERP Loading...</div>
+      {/* <div className="global-loader-text">ERP Loading...</div> */}
     </div>
   );
 };
