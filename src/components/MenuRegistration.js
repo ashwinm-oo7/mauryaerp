@@ -1,7 +1,7 @@
 import React, { useContext, useState, useEffect } from "react";
 import "../css/MenuRegistration.css";
 import { MenuContext } from "../context/MenuContext";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -10,8 +10,10 @@ import { LoadingContext } from "../context/LoadingContext";
 const MenuRegistration = () => {
   const { saberpmenu } = useContext(MenuContext);
   const { id } = useParams(); // For edit mode
+  const isEdit = Boolean(id);
+  const Navigate = useNavigate();
+
   const { setIsLoading } = useContext(LoadingContext);
-  const [menuType, setMenuType] = useState(""); // 'menu', 'submenu', or 'form'
 
   const [formData, setFormData] = useState({
     type: "", // "menu" | "submenu" | "form"
@@ -87,6 +89,9 @@ const MenuRegistration = () => {
           id: uuidv4(),
           controlType: type, // 'input' | 'checkbox' | 'dropdown'
           label: "",
+          dataType: "nvarchar", // Default
+          size: "",
+          decimals: "", // For decimal types
           options: ["dropdown", "input"].includes(type) ? [] : [],
           sabtable: "", // only relevant for dropdown
           required: false,
@@ -94,23 +99,46 @@ const MenuRegistration = () => {
       ],
     }));
   };
+  const handleLabelBlur = (id, value) => {
+    const trimmedValue = value.trim().toLowerCase();
+    if (trimmedValue === "") return; // Don't check empty
+
+    const isDuplicate = formData.controls.some(
+      (ctrl) =>
+        ctrl.id !== id && ctrl.label.trim().toLowerCase() === trimmedValue
+    );
+
+    if (isDuplicate) {
+      alert("❌ Label must be unique. This value is already used.");
+    }
+  };
+
+  // const updateControl = (id, field, value) => {
+  //   const updatedControls = formData.controls.map((ctrl) =>
+  //     ctrl.id === id ? { ...ctrl, [field]: value } : ctrl
+  //   );
+  //   setFormData((prev) => ({ ...prev, controls: updatedControls }));
+  // };
 
   const updateControl = (id, field, value) => {
-    if (field === "label") {
-      const isDuplicate = formData.controls.some(
-        (ctrl) =>
-          ctrl.id !== id &&
-          ctrl.label.trim().toLowerCase() === value.trim().toLowerCase()
-      );
-      if (isDuplicate) {
-        alert("❌ Label must be unique. This value is already used.");
-        return;
-      }
-    }
+    const updatedControls = formData.controls.map((ctrl) => {
+      if (ctrl.id !== id) return ctrl;
 
-    const updatedControls = formData.controls.map((ctrl) =>
-      ctrl.id === id ? { ...ctrl, [field]: value } : ctrl
-    );
+      let updatedCtrl = { ...ctrl, [field]: value };
+
+      if (field === "dataType") {
+        if (value === "int") updatedCtrl.size = 6;
+        else if (value === "bigint") updatedCtrl.size = 12;
+        else if (value === "decimal") updatedCtrl.size = 10;
+        else updatedCtrl.size = ""; // for nvarchar or others
+
+        // Reset decimals when switching off decimal
+        if (value !== "decimal") updatedCtrl.decimals = "";
+      }
+
+      return updatedCtrl;
+    });
+
     setFormData((prev) => ({ ...prev, controls: updatedControls }));
   };
 
@@ -175,7 +203,14 @@ const MenuRegistration = () => {
         body: JSON.stringify(formData),
       });
 
-      if (!res.ok) throw new Error("Failed to save menu");
+      const data = await res.json(); // Parse the response
+
+      if (!res.ok) {
+        // Handle errors from backend
+        const msg = data.message || "Something went wrong!";
+        alert(`❌ ${msg}`);
+        return;
+      }
 
       alert(id ? "✅ Updated successfully!" : "✅ Saved successfully!");
       if (!id) {
@@ -190,7 +225,7 @@ const MenuRegistration = () => {
         });
       }
     } catch (err) {
-      console.error(err);
+      console.error("Save error:", err);
       alert("Error saving menu.");
     }
   };
@@ -330,6 +365,7 @@ const MenuRegistration = () => {
                   onChange={(e) =>
                     updateControl(ctrl.id, "label", e.target.value)
                   }
+                  onBlur={(e) => handleLabelBlur(ctrl.id, e.target.value)}
                 />
               </>
               {ctrl.controlType === "input" && (
@@ -346,6 +382,45 @@ const MenuRegistration = () => {
                     }
                     placeholder="Label Name"
                   />
+                  {/* DataType selection */}
+                  <select
+                    value={ctrl.dataType}
+                    onChange={(e) =>
+                      updateControl(ctrl.id, "dataType", e.target.value)
+                    }
+                  >
+                    <option value="nvarchar">NVARCHAR</option>
+                    <option value="int">INT</option>
+                    <option value="bigint">BIGINT</option>
+                    <option value="decimal">DECIMAL</option>
+                  </select>
+
+                  {/* Size input */}
+                  <input
+                    type="number"
+                    placeholder="Size"
+                    value={ctrl.size}
+                    onChange={(e) =>
+                      updateControl(ctrl.id, "size", e.target.value)
+                    }
+                    style={{ width: "60px", marginLeft: "5px" }}
+                    min={0}
+                    readOnly={["int", "bigint"].includes(ctrl.dataType)} // <— this line
+                  />
+
+                  {/* Decimal places input (only when dataType === decimal) */}
+                  {ctrl.dataType === "decimal" && (
+                    <input
+                      type="number"
+                      placeholder="Decimals"
+                      value={ctrl.decimals}
+                      onChange={(e) =>
+                        updateControl(ctrl.id, "decimals", e.target.value)
+                      }
+                      style={{ width: "80px", marginLeft: "5px" }}
+                      min={0}
+                    />
+                  )}
                 </>
               )}
 
@@ -407,6 +482,15 @@ const MenuRegistration = () => {
         <button type="submit" className="save-button">
           {id ? "Update" : "Save"}
         </button>
+        {isEdit && (
+          <button
+            type="button"
+            onClick={() => Navigate("/menuregistrationlist")}
+            className=" save-button cancel-button"
+          >
+            Cancel
+          </button>
+        )}
       </form>
     </div>
   );

@@ -69,6 +69,22 @@ const DynamicForm = ({
       alert("No table name specified for this form.");
       return;
     }
+    // ✅ Validate required fields
+    const missingFields = controls
+      .filter((control) => control.required)
+      .filter((control) => {
+        const value = formData[control.label];
+        if (control.controlType === "checkbox") {
+          // return value !== true;
+        }
+        return value === undefined || value === null || value === "";
+      });
+
+    if (missingFields.length > 0) {
+      const fieldNames = missingFields.map((f) => f.label).join(", ");
+      setError(`Please fill all required fields: ${fieldNames}`);
+      return;
+    }
 
     try {
       setIsLoading(true);

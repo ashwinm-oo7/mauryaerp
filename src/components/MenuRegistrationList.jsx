@@ -3,6 +3,7 @@ import { MenuContext } from "../context/MenuContext";
 import axios from "axios";
 import "../css/MenuRegistrationList.css";
 import { useNavigate } from "react-router-dom";
+import MenuFormViewer from "../menu/MenuFormViewer";
 
 const MenuRegistrationList = () => {
   const { saberpmenu } = useContext(MenuContext);
@@ -10,21 +11,35 @@ const MenuRegistrationList = () => {
 
   const [menus, setMenus] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [editId, setEditId] = useState(null);
-  const [editFormData, setEditFormData] = useState(null);
+
   console.log("saberpmenu", saberpmenu);
   // const [error, setError] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [isFormView, setIsFormView] = useState(false);
 
-  // const [editFormData, setEditFormData] = useState({
-  //   bname: "",
-  //   MenuName: "",
-  //   ParentSubmenuName: "",
-  //   tablename: "",
-  // });
+  const [filters, setFilters] = useState({
+    bname: "",
+    tablename: "",
+    MenuName: "",
+    ParentSubmenuName: "",
+    FormType: "",
+    Active: "",
+  });
 
   useEffect(() => {
     fetchMenus();
   }, []);
+  const handleNext = () => {
+    if (currentIndex < filteredMenus.length - 1) {
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
+
+  const handlePrev = () => {
+    if (currentIndex > 0) {
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
 
   const fetchMenus = async () => {
     setLoading(true);
@@ -39,91 +54,16 @@ const MenuRegistrationList = () => {
       setLoading(false);
     }
   };
-  // const getBnameByPid = (pid) => {
-  //   const match = saberpmenu.find((m) => m.pid === pid || m.bname === pid);
-  //   return match ? match.bname : pid;
-  // };
 
-  // const startEdit = (menu) => {
-  //   const controlsCopy =
-  //     menu.controls?.map((ctrl) => ({
-  //       ...ctrl,
-  //       options: ctrl.options || [],
-  //     })) || [];
-
-  //   setEditFormData({
-  //     ...menu,
-  //     controls: controlsCopy,
-  //   });
-  //   setEditId(menu._id);
-  // };
-
-  const cancelEdit = () => {
-    setEditId(null);
-    setEditFormData(null);
+  const handleFilterChange = (e) => {
+    const { name, value } = e.target;
+    setFilters((prev) => ({ ...prev, [name]: value }));
   };
-
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setEditFormData((prev) => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value,
-    }));
-  };
-
-  // Dynamic controls handlers
-  const addControl = (type) => {
-    setEditFormData((prev) => ({
-      ...prev,
-      controls: [
-        ...prev.controls,
-        {
-          id: Date.now().toString(),
-          controlType: type,
-          label: "",
-          options: type === "dropdown" ? [] : [],
-          sabtable: "",
-        },
-      ],
-    }));
-  };
-
-  const updateControl = (id, field, value) => {
-    const updatedControls = editFormData.controls.map((ctrl) =>
-      ctrl._id === id ? { ...ctrl, [field]: value } : ctrl
-    );
-    setEditFormData((prev) => ({ ...prev, controls: updatedControls }));
-  };
-
-  const removeControl = (id) => {
-    setEditFormData((prev) => ({
-      ...prev,
-      controls: prev.controls.filter((ctrl) => ctrl.id !== id),
-    }));
-  };
-  const validateEditForm = () => {
-    if (!editFormData.bname.trim()) return "bname is required.";
-    if (!editFormData.FormType) return "FormType is required.";
-    return null;
-  };
-
-  const saveEdit = async () => {
-    const error = validateEditForm();
-    if (error) return alert(error);
-
-    try {
-      await axios.put(
-        `${process.env.REACT_APP_API_URL}/api/menus/updateMenu/${editId}`,
-        editFormData
-      );
-      alert("Menu updated successfully");
-      cancelEdit();
-      fetchMenus();
-    } catch (err) {
-      console.error("Failed to update menu", err);
-      alert("Failed to update menu");
-    }
-  };
+  const filteredMenus = menus.filter((menu) =>
+    Object.entries(filters).every(([key, val]) =>
+      val ? String(menu[key]).toLowerCase().includes(val.toLowerCase()) : true
+    )
+  );
 
   const deleteMenu = async (id) => {
     if (!window.confirm("Are you sure you want to delete this menu?")) return;
@@ -143,272 +83,180 @@ const MenuRegistrationList = () => {
 
   return (
     <div className="menu-list-container">
-      <h2>Menu Registration List</h2>
-
-      <table className="menu-table">
-        <thead>
-          <tr>
-            <th>SR.No</th>
-            <th>bname</th>
-            <th>tablename</th>
-            <th>MenuName</th>
-            <th>ParentSubmenuName</th>
-            <th>FormType</th>
-            <th>Active</th>
-            <th>Controls</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-
-        <tbody>
-          {menus.length === 0 && (
-            <tr>
-              <td colSpan="9" style={{ textAlign: "center" }}>
-                No menus found
-              </td>
-            </tr>
+      <div style={{ marginBottom: "20px" }}>
+        <h2>Menu Registration List</h2>
+        <button
+          onClick={() => setIsFormView(!isFormView)}
+          className="btn-toggle-view"
+        >
+          {isFormView ? "📋 Switch to Table View" : "📄 Switch to Form View"}
+        </button>
+      </div>
+      {isFormView ? (
+        <>
+          {filteredMenus.length > 0 ? (
+            <>
+              <MenuFormViewer
+                menu={filteredMenus[currentIndex]}
+                currentIndex={currentIndex}
+                total={filteredMenus.length}
+                onNext={handleNext}
+                onPrev={handlePrev}
+              />
+              <div className="menu-actions">
+                <button
+                  className="btn-edit"
+                  onClick={() =>
+                    Navigate(
+                      `/menuregistration/${filteredMenus[currentIndex]._id}`
+                    )
+                  }
+                >
+                  ✏️ Edit
+                </button>
+                <button
+                  className="btn-delete"
+                  onClick={() => deleteMenu(filteredMenus[currentIndex]._id)}
+                >
+                  ❌ Delete
+                </button>
+              </div>
+            </>
+          ) : (
+            <p>No menus found</p>
           )}
-
-          {menus.map((menu, idx) => {
-            const isEditing = editId === menu._id;
-
-            return (
-              <tr key={menu._id}>
-                <td>{idx + 1}</td>
-
-                {/* Editable fields */}
+        </>
+      ) : (
+        <div className="menu-table-wrapper">
+          <table className="menu-table">
+            <thead>
+              <tr>
+                <th>SR.No</th>
+                <th>bname</th>
+                <th>tablename</th>
+                <th>MenuName</th>
+                <th>ParentSubmenuName</th>
+                <th>FormType</th>
+                <th>Active</th>
+                <th>Controls</th>
+                <th>Actions</th>
+              </tr>{" "}
+              <tr className="search-menu-field">
+                <td></td>
                 <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="bname"
-                      value={editFormData.bname}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  ) : (
-                    menu.bname
-                  )}
+                  <input
+                    name="bname"
+                    value={filters.bname}
+                    onChange={handleFilterChange}
+                  />
                 </td>
-
                 <td>
-                  {isEditing ? (
-                    <input
-                      type="text"
-                      name="tablename"
-                      value={editFormData.tablename}
-                      onChange={handleInputChange}
-                    />
-                  ) : (
-                    menu.tablename
-                  )}
+                  <input
+                    name="tablename"
+                    value={filters.tablename}
+                    onChange={handleFilterChange}
+                  />
                 </td>
-
                 <td>
-                  {isEditing ? (
-                    <select
-                      name="MenuName"
-                      value={editFormData.MenuName}
-                      onChange={handleInputChange}
-                    >
-                      <option value="">Select Menu</option>
-                      {saberpmenu.map((m) => (
-                        <option key={m._id} value={m.bname}>
-                          {m.bname}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    menu.MenuName
-                  )}
+                  <input
+                    name="MenuName"
+                    value={filters.MenuName}
+                    onChange={handleFilterChange}
+                  />
                 </td>
-
                 <td>
-                  {isEditing ? (
-                    <select
-                      name="ParentSubmenuName"
-                      value={editFormData.ParentSubmenuName}
-                      onChange={handleInputChange}
-                    >
-                      <option value="">Select Submenu</option>
-                      {saberpmenu.map((m) => (
-                        <option key={m._id} value={m.bname}>
-                          {m.bname}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    menu.ParentSubmenuName
-                  )}
+                  <input
+                    name="ParentSubmenuName"
+                    value={filters.ParentSubmenuName}
+                    onChange={handleFilterChange}
+                  />
                 </td>
-
                 <td>
-                  {isEditing ? (
-                    <select
-                      name="FormType"
-                      value={editFormData.FormType}
-                      onChange={handleInputChange}
-                    >
-                      <option value="M">Master</option>
-                      <option value="T">Transaction</option>
-                      <option value="R">Report</option>
-                      <option value="I">Inventory</option>
-                    </select>
-                  ) : (
-                    menu.FormType
-                  )}
+                  <input
+                    name="FormType"
+                    value={filters.FormType}
+                    onChange={handleFilterChange}
+                  />
                 </td>
-
                 <td>
-                  {isEditing ? (
-                    <input
-                      type="checkbox"
-                      name="Active"
-                      checked={editFormData.Active}
-                      onChange={handleInputChange}
-                    />
-                  ) : menu.Active ? (
-                    "Yes"
-                  ) : (
-                    "No"
-                  )}
+                  <input
+                    name="Active"
+                    value={filters.Active}
+                    onChange={handleFilterChange}
+                  />
                 </td>
+                <td></td>
+                <td></td>
+              </tr>
+            </thead>
 
-                <td>
-                  {isEditing ? (
-                    <>
-                      {editFormData.controls?.map((ctrl, i) => (
-                        <div key={ctrl.id} className="control-edit-row">
-                          {ctrl.controlType === "input" && (
-                            <input
-                              type="text"
-                              value={ctrl.label}
-                              placeholder="Label"
-                              onChange={(e) =>
-                                updateControl(ctrl._id, "label", e.target.value)
-                              }
-                            />
-                          )}
-                          {ctrl.controlType === "dropdown" && (
-                            <>
-                              <input
-                                type="text"
-                                value={ctrl?.options?.join(", ")}
-                                placeholder="Comma-separated options"
-                                onChange={(e) =>
-                                  updateControl(
-                                    ctrl._id,
-                                    "options",
-                                    e.target.value
-                                      .split(",")
-                                      .map((opt) => opt.trim())
-                                  )
-                                }
-                              />
-                              <select
-                                value={ctrl.sabtable}
-                                onChange={(e) =>
-                                  updateControl(
-                                    ctrl._id,
-                                    "sabtable",
-                                    e.target.value
-                                  )
-                                }
-                              >
-                                <option value="">Select sabtable</option>
-                                {saberpmenu
-                                  .filter((m) => m.tablename)
-                                  .map((m) => (
-                                    <option key={m._id} value={m.tablename}>
-                                      {m.tablename}
-                                    </option>
-                                  ))}
-                              </select>
-                            </>
-                          )}
-                          <button
-                            onClick={() => removeControl(ctrl.id)}
-                            title="Remove control"
-                            className="remove-control-btn"
-                            type="button"
-                          >
-                            ❌
-                          </button>
+            <tbody>
+              {menus.length === 0 && (
+                <tr>
+                  <td colSpan="9" style={{ textAlign: "center" }}>
+                    No menus found
+                  </td>
+                </tr>
+              )}
+
+              {filteredMenus.map((menu, idx) => {
+                return (
+                  <tr key={menu._id}>
+                    <td>{idx + 1}</td>
+
+                    {/* Editable fields */}
+                    <td>{menu.bname}</td>
+
+                    <td>{menu.tablename}</td>
+
+                    <td>{menu.MenuName}</td>
+
+                    <td>{menu.ParentSubmenuName}</td>
+
+                    <td>{menu.FormType}</td>
+
+                    <td>{menu.Active ? "Yes" : "No"}</td>
+
+                    <td>
+                      {menu.controls?.map((ctrl, i) => (
+                        <div key={ctrl.id} className="control-view-row">
+                          <strong>{ctrl.controlType}</strong>: {ctrl.label}{" "}
+                          {ctrl.controlType === "dropdown" &&
+                            `(Options: ${ctrl.options.join(", ")},\n 
+                          Sabtable: ${ctrl.sabtable || "-"})`}
                         </div>
                       ))}
+                    </td>
 
-                      <div className="add-control-buttons">
-                        <button
-                          type="button"
-                          onClick={() => addControl("input")}
-                          className="add-control-btn"
-                        >
-                          ➕ Input
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => addControl("checkbox")}
-                          className="add-control-btn"
-                        >
-                          ➕ Checkbox
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => addControl("dropdown")}
-                          className="add-control-btn"
-                        >
-                          ➕ Dropdown
-                        </button>
-                      </div>
-                    </>
-                  ) : (
-                    menu.controls?.map((ctrl, i) => (
-                      <div key={ctrl.id} className="control-view-row">
-                        <strong>{ctrl.controlType}</strong>: {ctrl.label}{" "}
-                        {ctrl.controlType === "dropdown" &&
-                          `(Options: ${ctrl.options.join(", ")},\n 
-                          Sabtable: ${ctrl.sabtable || "-"})`}
-                      </div>
-                    ))
-                  )}
-                </td>
+                    <td>
+                      {
+                        <div className="action-buttons">
+                          <button
+                            // onClick={() => startEdit(menu)}
+                            onClick={() =>
+                              Navigate(`/menuregistration/${menu._id}`)
+                            }
+                            className="btn-edit"
+                          >
+                            ✏️ Edit
+                          </button>
 
-                <td>
-                  {isEditing ? (
-                    <>
-                      <button onClick={saveEdit} className="btn-save">
-                        Save
-                      </button>
-                      <button onClick={cancelEdit} className="btn-cancel">
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <div className="action-buttons">
-                      <button
-                        // onClick={() => startEdit(menu)}
-                        onClick={() =>
-                          Navigate(`/menuregistration/${menu._id}`)
-                        }
-                        className="btn-edit"
-                      >
-                        ✏️ Edit
-                      </button>
-
-                      <button
-                        onClick={() => deleteMenu(menu._id)}
-                        className="btn-delete"
-                      >
-                        ❌ Delete
-                      </button>
-                    </div>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
+                          <button
+                            onClick={() => deleteMenu(menu._id)}
+                            className="btn-delete"
+                          >
+                            ❌ Delete
+                          </button>
+                        </div>
+                      }
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      )}
     </div>
   );
 };

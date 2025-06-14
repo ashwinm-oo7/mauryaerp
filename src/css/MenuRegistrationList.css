@@ -26,11 +26,13 @@
 /* Table Design */
 .menu-table {
   width: 100%;
+    min-width: 800px; /* Ensures horizontal scroll on smaller viewports */
+
   border-collapse: collapse;
   background-color: #fff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border-radius: 6px;
-  overflow: hidden;
+  overflow: auto;
 }
 
 .menu-table th,
@@ -46,6 +48,11 @@
   background-color: #f0f0f0;
   font-weight: bold;
   color: #333;
+}
+.menu-table-wrapper {
+  overflow-x: auto;
+  margin-top: 16px;
+  border-radius: 6px;
 }
 
 /* Input Fields */
@@ -70,6 +77,8 @@
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
   white-space: nowrap;
+  margin: 20px;
+  width: 100px;
 }
 
 /* Specific Button Colors */
@@ -189,4 +198,44 @@
 .action-buttons {
   display: flex;
   gap: 8px; /* Adds spacing between edit and delete */
+}
+
+.search-menu-field{
+
+  width: 100%;
+  padding: 4px 6px;
+  font-size: 13px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.btn-toggle-view {
+  background-color: #f3f4f6; /* light gray */
+  border: 1px solid #d1d5db;
+  color: #374151; /* gray-700 */
+  padding: 10px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-toggle-view:hover {
+  background-color: #e5e7eb; /* hover lighter gray */
+  color: #111827; /* darker text */
+  border-color: #9ca3af;
+}
+
+.btn-toggle-view:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.5); /* blue shadow */
+}
+
+.btn-toggle-view svg {
+  width: 16px;
+  height: 16px;
 }
