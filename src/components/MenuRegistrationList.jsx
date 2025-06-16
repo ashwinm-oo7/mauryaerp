@@ -185,7 +185,9 @@ const MenuRegistrationList = () => {
                     onChange={handleFilterChange}
                   />
                 </td>
-                <td></td>
+                <td>
+                  <input name="controls" disabled style={{ width: "300px" }} />
+                </td>
                 <td></td>
               </tr>
             </thead>

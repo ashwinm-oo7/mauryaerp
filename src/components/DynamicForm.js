@@ -21,6 +21,8 @@ const DynamicForm = ({
 
   // ADD THIS useEffect to listen for changes in initialData
   useEffect(() => {
+    setMsg("");
+    setError("");
     setFormData(initialData || {});
     originalData.current = initialData || {};
   }, [initialData]);
@@ -126,16 +128,43 @@ const DynamicForm = ({
 
         switch (controlType) {
           case "input":
+            const isNumeric =
+              control.dataType === "int" ||
+              control.dataType === "bigint" ||
+              control.dataType === "decimal";
+            const inputLength = Number(control.length) || undefined;
+
             return (
               <div key={label}>
                 <label className="block font-medium">
                   {options}:({label})
                 </label>
                 <input
-                  type="text"
-                  className="border px-2 py-1 rounded w-full"
+                  type={isNumeric ? "number" : "text"}
+                  inputMode={isNumeric ? "numeric" : "text"} // for mobile numeric keyboard
+                  className="dynamic-form-input"
                   value={formData[label] || ""}
-                  onChange={(e) => handleChange(label, e.target.value)}
+                  min={0}
+                  maxLength={
+                    control.dataType !== "nvarcharv"
+                      ? inputLength || undefined
+                      : undefined
+                  }
+                  onChange={(e) => {
+                    let value = e.target.value;
+
+                    // Optional: Prevent entry of non-numeric characters
+                    if (isNumeric) {
+                      if (value === "" || /^-?\d*\.?\d*$/.test(value)) {
+                        const digitCount = value.replace(/\D/g, "").length;
+                        if (!inputLength || digitCount <= inputLength) {
+                          handleChange(label, value);
+                        }
+                      }
+                    } else {
+                      handleChange(label, value);
+                    }
+                  }}
                 />
               </div>
             );

@@ -110,6 +110,15 @@ const Header = () => {
                   Menu Registration
                 </Link>
               </li>
+              <li className="header__dropdown-item">
+                <Link
+                  to="/menuregistrationList"
+                  className="header__dropdown-link"
+                  onClick={() => setOpenMenuId(null)}
+                >
+                  Menu RegistrationList
+                </Link>
+              </li>
             </ul>
           )}
         </li>

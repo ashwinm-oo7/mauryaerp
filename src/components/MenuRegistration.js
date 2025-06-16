@@ -89,9 +89,11 @@ const MenuRegistration = () => {
           id: uuidv4(),
           controlType: type, // 'input' | 'checkbox' | 'dropdown'
           label: "",
-          dataType: "nvarchar", // Default
+          caption: "",
+          dataType: "",
           size: "",
           decimals: "", // For decimal types
+          length: "",
           options: ["dropdown", "input"].includes(type) ? [] : [],
           sabtable: "", // only relevant for dropdown
           required: false,
@@ -323,6 +325,7 @@ const MenuRegistration = () => {
             required
           >
             <option value="M">Master</option>
+            <option value="MD">Master Dublicate</option>
             <option value="T">Transaction</option>
             <option value="R">Report</option>
             <option value="I">Inventory</option>
@@ -367,6 +370,15 @@ const MenuRegistration = () => {
                   }
                   onBlur={(e) => handleLabelBlur(ctrl.id, e.target.value)}
                 />
+                {/* <input
+                  type="text"
+                  placeholder="Caption name"
+                  value={ctrl.caption}
+                  onChange={(e) =>
+                    updateControl(ctrl.id, "caption", e.target.value)
+                  }
+                  onBlur={(e) => handleLabelBlur(ctrl.id, e.target.value)}
+                /> */}
               </>
               {ctrl.controlType === "input" && (
                 <>
@@ -389,6 +401,8 @@ const MenuRegistration = () => {
                       updateControl(ctrl.id, "dataType", e.target.value)
                     }
                   >
+                    <option value="">Select Datatype</option>
+
                     <option value="nvarchar">NVARCHAR</option>
                     <option value="int">INT</option>
                     <option value="bigint">BIGINT</option>
@@ -407,7 +421,6 @@ const MenuRegistration = () => {
                     min={0}
                     readOnly={["int", "bigint"].includes(ctrl.dataType)} // <— this line
                   />
-
                   {/* Decimal places input (only when dataType === decimal) */}
                   {ctrl.dataType === "decimal" && (
                     <input
@@ -419,6 +432,20 @@ const MenuRegistration = () => {
                       }
                       style={{ width: "80px", marginLeft: "5px" }}
                       min={0}
+                    />
+                  )}
+                  {/* length input */}
+                  {ctrl.dataType !== "nvarchar" && (
+                    <input
+                      type="number"
+                      placeholder="length"
+                      value={ctrl.length}
+                      onChange={(e) =>
+                        updateControl(ctrl.id, "length", e.target.value)
+                      }
+                      style={{ width: "60px", marginLeft: "5px" }}
+                      min={0}
+                      // readOnly={["int", "bigint"].includes(ctrl.dataType)}
                     />
                   )}
                 </>

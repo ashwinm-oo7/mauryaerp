@@ -15,7 +15,7 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
   const [sortField, setSortField] = useState("");
   const [filterField, setFilterField] = useState("");
   const [filterValue, setFilterValue] = useState("");
-
+  console.log(controls);
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
@@ -85,14 +85,14 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
     return (
       <div className="df-card-view">
         <div className="df-card">
-          {controls.map((control) => (
-            <div key={control.label} className="df-card-field">
-              <strong>{control.label}:</strong>{" "}
-              {control.controlType === "checkbox"
-                ? row[control.label]
+          {controls.map(({ controlType, label, options = [] }) => (
+            <div key={label} className="df-card-field">
+              <strong>{controlType === "checkbox" ? label : options}:</strong>{" "}
+              {controlType === "checkbox"
+                ? row[label]
                   ? "✅"
                   : "❌"
-                : row[control.label] || "-"}
+                : row[label] || "-"}
             </div>
           ))}
           <div className="df-card-actions">
@@ -159,15 +159,17 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
           {pageData.map((row) => (
             <div key={row._id} className="vs-card">
               <div className="vs-card-content">
-                {controls.map((control) => (
-                  <div key={control.label} className="vs-field">
-                    <div className="vs-label">{control.label}</div>
+                {controls.map(({ controlType, label, options = [] }) => (
+                  <div key={label} className="vs-field">
+                    <div className="vs-label">
+                      {controlType === "checkbox" ? label : options}
+                    </div>
                     <div className="vs-value">
-                      {control.controlType === "checkbox"
-                        ? row[control.label]
+                      {controlType === "checkbox"
+                        ? row[label]
                           ? "✅"
                           : "❌"
-                        : row[control.label] || "-"}
+                        : row[label] || "-"}
                     </div>
                   </div>
                 ))}
@@ -231,17 +233,26 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
       <table className="df-table">
         <thead className="df-thead">
           <tr className="df-tr">
-            {controls.map((control) => (
+            <th className="df-th">Sr. No</th>
+
+            {/* {controls.map((control) => (
               <th key={control.label} className="df-th">
-                {control.label}
+                {control?.label}
+              </th>
+            ))} */}
+            {controls.map(({ controlType, label, options = [] }) => (
+              <th key={label} className="df-th">
+                {controlType === "checkbox" ? label : options}
               </th>
             ))}
+
             <th className="df-th">Actions</th>
           </tr>
         </thead>
         <tbody className="df-tbody">
-          {data.map((row) => (
+          {filteredData.map((row, index) => (
             <tr key={row._id} className="df-tr">
+              <td className="df-td">{index + 1}</td> {/* Sr. No column */}
               {controls.map((control) => (
                 <td key={control.label} className="df-td">
                   {control.controlType === "checkbox"
@@ -318,9 +329,7 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
         >
           <option value="">None</option>
           {controls
-            .filter(
-              (c) => c.controlType === "checkbox" || c.controlType === "input"
-            )
+            .filter((c) => c.controlType === "checkbox" || c.controlType)
             .map((c) => (
               <option key={c.label} value={c.label}>
                 {c.label}
@@ -362,7 +371,7 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
         : renderTableView()}
       {/* For brevity, omitted here */}
       <p style={{ fontStyle: "italic", marginTop: 20, color: "#6b7280" }}>
-        (Table view coming soon...)
+        (View Mode {viewMode})
       </p>
     </div>
   );
