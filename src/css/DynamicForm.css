@@ -79,7 +79,9 @@ form input[type="checkbox"] {
   background-color: #4677e0;
   transition: background-color 0.2s ease-in-out;
 }
-
+.readonly-label {
+  color: #b91c1c;
+}
 .DynamicForm-submit-button:hover:not(:disabled) {
   background-color: #1d4ed8;
 }

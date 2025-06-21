@@ -3,6 +3,7 @@ import React, { useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 import "../css/DynamicForm.css";
 import { LoadingContext } from "../context/LoadingContext";
+
 const DynamicForm = ({
   formMeta,
   initialData,
@@ -20,12 +21,41 @@ const DynamicForm = ({
   const originalData = useRef(initialData || {});
 
   // ADD THIS useEffect to listen for changes in initialData
+  // useEffect(() => {
+  //   setMsg("");
+  //   setError("");
+  //   setFormData(initialData || {});
+  //   originalData.current = initialData || {};
+  // }, [initialData]);
+
   useEffect(() => {
     setMsg("");
     setError("");
-    setFormData(initialData || {});
-    originalData.current = initialData || {};
+
+    const updatedData = { ...(initialData || {}) };
+
+    // Set current IST date for controls with defaultDateOption === "currentDate"
+    const getCurrentDateInIST = () => {
+      const nowUTC = new Date();
+      const istOffset = 5.5 * 60 * 60 * 1000;
+      const istTime = new Date(nowUTC.getTime() + istOffset);
+      return istTime.toISOString().split("T")[0];
+    };
+
+    formMeta.controls?.forEach((control) => {
+      if (
+        control.dataType === "date" &&
+        control.defaultDateOption === "currentDate" &&
+        !updatedData[control.label]
+      ) {
+        updatedData[control.label] = getCurrentDateInIST();
+      }
+    });
+
+    setFormData(updatedData);
+    originalData.current = updatedData;
   }, [initialData]);
+
   useEffect(() => {
     const hasChanges = Object.keys(formData).some(
       (key) => formData[key] !== originalData.current[key]
@@ -92,7 +122,20 @@ const DynamicForm = ({
       setIsLoading(true);
       setMsg("");
       setError("");
+      // clone existing formData
       const payload = { ...formData };
+
+      // add only sequence fields with entnoFormat
+      controls.forEach((control) => {
+        if (
+          control.dataType === "sequence" &&
+          control.entnoFormat &&
+          !formData[control.label]
+        ) {
+          // set format string in payload (e.g. "0000")
+          payload["entnoFormat"] = control.entnoFormat;
+        }
+      });
       let response;
       if (initialData?._id) {
         response = await axios.put(
@@ -136,36 +179,64 @@ const DynamicForm = ({
 
             return (
               <div key={label}>
-                <label className="block font-medium">
+                <label
+                  // className="block font-medium"
+                  className={
+                    control.readOnly
+                      ? "readonly-label block font-medium"
+                      : "block font-medium"
+                  }
+                >
                   {options}:({label})
                 </label>
-                <input
-                  type={isNumeric ? "number" : "text"}
-                  inputMode={isNumeric ? "numeric" : "text"} // for mobile numeric keyboard
-                  className="dynamic-form-input"
-                  value={formData[label] || ""}
-                  min={0}
-                  maxLength={
-                    control.dataType !== "nvarcharv"
-                      ? inputLength || undefined
-                      : undefined
-                  }
-                  onChange={(e) => {
-                    let value = e.target.value;
-
-                    // Optional: Prevent entry of non-numeric characters
-                    if (isNumeric) {
-                      if (value === "" || /^-?\d*\.?\d*$/.test(value)) {
-                        const digitCount = value.replace(/\D/g, "").length;
-                        if (!inputLength || digitCount <= inputLength) {
-                          handleChange(label, value);
-                        }
-                      }
-                    } else {
-                      handleChange(label, value);
+                {control.dataType === "date" ? (
+                  <input
+                    type="date"
+                    // className="dynamic-form-input"
+                    className={
+                      control.readOnly
+                        ? "dynamic-form-input readonly-label"
+                        : "dynamic-form-input"
                     }
-                  }}
-                />
+                    value={
+                      formData[label] ||
+                      (control.defaultDateOption === "currentDate"
+                        ? new Date().toISOString().split("T")[0]
+                        : "")
+                    }
+                    onChange={(e) => handleChange(label, e.target.value)}
+                    disabled={control.readOnly}
+                  />
+                ) : (
+                  <input
+                    type={isNumeric ? "number" : "text"}
+                    inputMode={isNumeric ? "numeric" : "text"} // for mobile numeric keyboard
+                    className="dynamic-form-input"
+                    disabled={control.readOnly}
+                    value={formData[label] || ""}
+                    min={0}
+                    maxLength={
+                      control.dataType !== "nvarcharv"
+                        ? inputLength || undefined
+                        : undefined
+                    }
+                    onChange={(e) => {
+                      let value = e.target.value;
+
+                      // Optional: Prevent entry of non-numeric characters
+                      if (isNumeric) {
+                        if (value === "" || /^-?\d*\.?\d*$/.test(value)) {
+                          const digitCount = value.replace(/\D/g, "").length;
+                          if (!inputLength || digitCount <= inputLength) {
+                            handleChange(label, value);
+                          }
+                        }
+                      } else {
+                        handleChange(label, value);
+                      }
+                    }}
+                  />
+                )}
               </div>
             );
 

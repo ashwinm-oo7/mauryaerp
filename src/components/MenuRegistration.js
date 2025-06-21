@@ -6,6 +6,9 @@ import { v4 as uuidv4 } from "uuid";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import { LoadingContext } from "../context/LoadingContext";
+import EntnoGenerator from "../reusable/EntnoGenerator";
+import DynamicControl from "../reusable/DynamicControl";
+import ConditionalControl from "../reusable/ConditionalControl";
 
 const MenuRegistration = () => {
   const { saberpmenu } = useContext(MenuContext);
@@ -16,7 +19,7 @@ const MenuRegistration = () => {
   const { setIsLoading } = useContext(LoadingContext);
 
   const [formData, setFormData] = useState({
-    type: "", // "menu" | "submenu" | "form"
+    type: "form", // "menu" | "submenu" | "form"
 
     bname: "",
     tablename: "",
@@ -27,6 +30,12 @@ const MenuRegistration = () => {
     controls: [], // Array of dynamic fields
   });
   console.log("formData", formData.controls);
+  const [formValues, setFormValues] = useState({});
+
+  const handleControlChange = (field, value) => {
+    setFormValues((prev) => ({ ...prev, [field]: value }));
+  };
+
   useEffect(() => {
     if (id) {
       const fetchData = async () => {
@@ -80,7 +89,7 @@ const MenuRegistration = () => {
     }));
   };
 
-  const addControl = (type) => {
+  const addControlwait = (type) => {
     setFormData((prev) => ({
       ...prev,
       controls: [
@@ -97,10 +106,47 @@ const MenuRegistration = () => {
           options: ["dropdown", "input"].includes(type) ? [] : [],
           sabtable: "", // only relevant for dropdown
           required: false,
+          readOnly: false,
+          entnoFormat: "",
+          autoGenerate: false,
         },
       ],
     }));
   };
+
+  const addControl = (type, insertIndex = null) => {
+    const newControl = {
+      id: uuidv4(),
+      controlType: type,
+      label: "",
+      caption: "",
+      dataType: "",
+      size: "",
+      decimals: "",
+      length: "",
+      options: ["dropdown", "input"].includes(type) ? [] : [],
+      sabtable: "",
+      required: false,
+      readOnly: false,
+      entnoFormat: "",
+      autoGenerate: false,
+    };
+
+    setFormData((prev) => {
+      const updatedControls = [...prev.controls];
+      if (insertIndex !== null && insertIndex >= 0) {
+        updatedControls.splice(insertIndex, 0, newControl); // insert at specific position
+      } else {
+        updatedControls.push(newControl); // default: append at end
+      }
+
+      return {
+        ...prev,
+        controls: updatedControls,
+      };
+    });
+  };
+
   const handleLabelBlur = (id, value) => {
     const trimmedValue = value.trim().toLowerCase();
     if (trimmedValue === "") return; // Don't check empty
@@ -138,6 +184,21 @@ const MenuRegistration = () => {
         if (value !== "decimal") updatedCtrl.decimals = "";
       }
 
+      // 💡 Handle auto-generate logic when entnoFormat is updated
+      if (
+        field === "entnoFormat" ||
+        (field === "label" && ctrl.dataType === "sequence")
+      ) {
+        const isEntnoField = updatedCtrl.label?.toLowerCase().includes("entno");
+        const hasGenerateRule = updatedCtrl.entnoFormat?.trim();
+
+        if (ctrl.dataType === "sequence" && isEntnoField && hasGenerateRule) {
+          updatedCtrl.autoGenerate = true;
+        } else {
+          updatedCtrl.autoGenerate = false;
+        }
+      }
+
       return updatedCtrl;
     });
 
@@ -153,7 +214,15 @@ const MenuRegistration = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const { MenuName, ParentSubmenuName, tablename, type } = formData;
+    const {
+      MenuName,
+      bname,
+      ParentSubmenuName,
+      tablename,
+      type,
+      Active,
+      FormType,
+    } = formData;
 
     // Ensure type selected
     if (!type) {
@@ -162,14 +231,24 @@ const MenuRegistration = () => {
     }
 
     if (type === "menu") {
-      if (!MenuName || ParentSubmenuName || tablename) {
-        alert("For Menu type, only 'MenuName' should be filled.");
+      const missingFields = [];
+
+      if (!type) missingFields.push("type");
+      if (typeof bname !== "string" || bname.trim() === "")
+        missingFields.push("bname");
+      if (typeof Active !== "boolean")
+        missingFields.push("Active (must be true or false)");
+      if (typeof FormType !== "string" || FormType.trim() === "")
+        missingFields.push("FormType");
+
+      if (missingFields.length > 0) {
+        alert(`❌ Missing or invalid fields: ${missingFields.join(", ")}`);
         return;
       }
     }
 
     if (type === "submenu") {
-      if (!MenuName || !ParentSubmenuName || tablename) {
+      if (!MenuName || ParentSubmenuName || tablename) {
         alert(
           "For Submenu, only 'MenuName' and 'ParentSubmenuName' should be filled."
         );
@@ -343,34 +422,35 @@ const MenuRegistration = () => {
         </div>
 
         {/* Dynamic Controls Section */}
-        <div className="dynamic-controls">
-          <h3>Form Controls</h3>
-          <div className="add-buttons">
-            <button type="button" onClick={() => addControl("input")}>
-              ➕ Input Box
-            </button>
-            <button type="button" onClick={() => addControl("checkbox")}>
-              ➕ Checkbox
-            </button>
-            <button type="button" onClick={() => addControl("dropdown")}>
-              ➕ Dropdown
-            </button>
-          </div>
+        {formData.type === "form" && (
+          <div className="dynamic-controls">
+            <h3>Form Controls</h3>
+            <div className="add-buttons">
+              <button type="button" onClick={() => addControl("input")}>
+                ➕ Input Box
+              </button>
+              <button type="button" onClick={() => addControl("checkbox")}>
+                ➕ Checkbox
+              </button>
+              <button type="button" onClick={() => addControl("dropdown")}>
+                ➕ Dropdown
+              </button>
+            </div>
 
-          {formData.controls.map((ctrl, index) => (
-            <div key={ctrl.id} className="control-row">
-              <label style={{ width: "" }}>{ctrl.controlType} Label:</label>
-              <>
-                <input
-                  type="text"
-                  placeholder="column name"
-                  value={ctrl.label}
-                  onChange={(e) =>
-                    updateControl(ctrl.id, "label", e.target.value)
-                  }
-                  onBlur={(e) => handleLabelBlur(ctrl.id, e.target.value)}
-                />
-                {/* <input
+            {formData.controls.map((ctrl, index) => (
+              <div key={ctrl.id} className="control-row">
+                <label style={{ width: "" }}>{ctrl.controlType} Label:</label>
+                <>
+                  <input
+                    type="text"
+                    placeholder="column name"
+                    value={ctrl.label}
+                    onChange={(e) =>
+                      updateControl(ctrl.id, "label", e.target.value)
+                    }
+                    onBlur={(e) => handleLabelBlur(ctrl.id, e.target.value)}
+                  />
+                  {/* <input
                   type="text"
                   placeholder="Caption name"
                   value={ctrl.caption}
@@ -379,133 +459,218 @@ const MenuRegistration = () => {
                   }
                   onBlur={(e) => handleLabelBlur(ctrl.id, e.target.value)}
                 /> */}
-              </>
-              {ctrl.controlType === "input" && (
-                <>
-                  <input
-                    type="text"
-                    value={ctrl?.options?.join(", ")}
-                    onChange={(e) =>
-                      updateControl(
-                        ctrl.id,
-                        "options",
-                        e.target.value.split(",").map((opt) => opt.trim())
-                      )
-                    }
-                    placeholder="Label Name"
-                  />
-                  {/* DataType selection */}
-                  <select
-                    value={ctrl.dataType}
-                    onChange={(e) =>
-                      updateControl(ctrl.id, "dataType", e.target.value)
-                    }
-                  >
-                    <option value="">Select Datatype</option>
-
-                    <option value="nvarchar">NVARCHAR</option>
-                    <option value="int">INT</option>
-                    <option value="bigint">BIGINT</option>
-                    <option value="decimal">DECIMAL</option>
-                  </select>
-
-                  {/* Size input */}
-                  <input
-                    type="number"
-                    placeholder="Size"
-                    value={ctrl.size}
-                    onChange={(e) =>
-                      updateControl(ctrl.id, "size", e.target.value)
-                    }
-                    style={{ width: "60px", marginLeft: "5px" }}
-                    min={0}
-                    readOnly={["int", "bigint"].includes(ctrl.dataType)} // <— this line
-                  />
-                  {/* Decimal places input (only when dataType === decimal) */}
-                  {ctrl.dataType === "decimal" && (
-                    <input
-                      type="number"
-                      placeholder="Decimals"
-                      value={ctrl.decimals}
-                      onChange={(e) =>
-                        updateControl(ctrl.id, "decimals", e.target.value)
-                      }
-                      style={{ width: "80px", marginLeft: "5px" }}
-                      min={0}
-                    />
-                  )}
-                  {/* length input */}
-                  {ctrl.dataType !== "nvarchar" && (
-                    <input
-                      type="number"
-                      placeholder="length"
-                      value={ctrl.length}
-                      onChange={(e) =>
-                        updateControl(ctrl.id, "length", e.target.value)
-                      }
-                      style={{ width: "60px", marginLeft: "5px" }}
-                      min={0}
-                      // readOnly={["int", "bigint"].includes(ctrl.dataType)}
-                    />
-                  )}
                 </>
-              )}
+                {ctrl.controlType === "input" && (
+                  <>
+                    <input
+                      type="text"
+                      value={ctrl?.options?.join(", ")}
+                      onChange={(e) =>
+                        updateControl(
+                          ctrl.id,
+                          "options",
+                          e.target.value.split(",").map((opt) => opt.trim())
+                        )
+                      }
+                      placeholder="Label Name"
+                    />
+                    {/* DataType selection */}
+                    <select
+                      value={ctrl.dataType}
+                      onChange={(e) =>
+                        updateControl(ctrl.id, "dataType", e.target.value)
+                      }
+                    >
+                      <option value="">Select Datatype</option>
 
-              {ctrl.controlType === "dropdown" && (
-                <>
-                  <input
-                    type="text"
-                    value={ctrl?.options?.join(", ")}
-                    onChange={(e) =>
-                      updateControl(
-                        ctrl.id,
-                        "options",
-                        e.target.value.split(",").map((opt) => opt.trim())
-                      )
-                    }
-                    placeholder="Label Name"
-                  />
+                      <option value="nvarchar">NVARCHAR</option>
+                      <option value="int">INT</option>
+                      <option value="bigint">BIGINT</option>
+                      <option value="decimal">DECIMAL</option>
+                      <option value="date">DATE</option>
+                      <option value="sequence">Sequence</option>
+                    </select>
 
-                  <select
-                    value={ctrl?.sabtable}
-                    onChange={(e) =>
-                      updateControl(ctrl.id, "sabtable", e.target.value)
-                    }
-                  >
-                    <option value="">Or select table (sabtable)</option>
-                    {saberpmenu.map((menu) =>
-                      menu.tablename ? (
-                        <option key={menu._id} value={menu.tablename}>
-                          {menu.tablename}
-                        </option>
-                      ) : null
+                    {/* Size input */}
+                    {ctrl.dataType !== "date" &&
+                      ctrl.dataType !== "sequence" && (
+                        <input
+                          type="number"
+                          placeholder="Size"
+                          value={ctrl.size}
+                          onChange={(e) =>
+                            updateControl(ctrl.id, "size", e.target.value)
+                          }
+                          style={{ width: "60px", marginLeft: "5px" }}
+                          min={0}
+                          readOnly={["int", "bigint"].includes(ctrl.dataType)} // <— this line
+                        />
+                      )}
+                    {/* Decimal places input (only when dataType === decimal) */}
+                    {ctrl.dataType === "decimal" && (
+                      <input
+                        type="number"
+                        placeholder="Decimals"
+                        value={ctrl.decimals}
+                        onChange={(e) =>
+                          updateControl(ctrl.id, "decimals", e.target.value)
+                        }
+                        style={{ width: "80px", marginLeft: "5px" }}
+                        min={0}
+                      />
                     )}
+                    {/* length input */}
+                    {ctrl.dataType !== "nvarchar" &&
+                      ctrl.dataType !== "date" &&
+                      ctrl.dataType !== "sequence" && (
+                        <input
+                          type="number"
+                          placeholder="length"
+                          value={ctrl.length}
+                          onChange={(e) =>
+                            updateControl(ctrl.id, "length", e.target.value)
+                          }
+                          style={{ width: "60px", marginLeft: "5px" }}
+                          min={0}
+                          // readOnly={["int", "bigint"].includes(ctrl.dataType)}
+                        />
+                      )}
+                    {ctrl.dataType === "date" && (
+                      <select
+                        value={ctrl.defaultDateOption || ""}
+                        onChange={(e) =>
+                          updateControl(
+                            ctrl.id,
+                            "defaultDateOption",
+                            e.target.value
+                          )
+                        }
+                        style={{ marginLeft: "5px" }}
+                      >
+                        <option value="">Select Date Option</option>
+                        <option value="currentDate">Current Date</option>
+                      </select>
+                    )}
+                  </>
+                )}
+                {ctrl.controlType === "dropdown" && (
+                  <>
+                    <input
+                      type="text"
+                      value={ctrl?.options?.join(", ")}
+                      onChange={(e) =>
+                        updateControl(
+                          ctrl.id,
+                          "options",
+                          e.target.value.split(",").map((opt) => opt.trim())
+                        )
+                      }
+                      placeholder="Label Name"
+                    />
+
+                    <select
+                      value={ctrl?.sabtable}
+                      onChange={(e) =>
+                        updateControl(ctrl.id, "sabtable", e.target.value)
+                      }
+                    >
+                      <option value="">Or select table (sabtable)</option>
+                      {saberpmenu.map((menu) =>
+                        menu.tablename ? (
+                          <option key={menu._id} value={menu.tablename}>
+                            {menu.tablename}
+                          </option>
+                        ) : null
+                      )}
+                    </select>
+                  </>
+                )}
+                {/* ✅ Required Toggle */}
+                <select
+                  value={ctrl.required ? "true" : "false"}
+                  onChange={(e) =>
+                    updateControl(
+                      ctrl.id,
+                      "required",
+                      e.target.value === "true"
+                    )
+                  }
+                  className="required-toggle"
+                >
+                  <option value="false">Required: No</option>
+                  <option value="true">Required: Yes</option>
+                </select>
+                {ctrl.controlType === "input" &&
+                  ctrl.dataType === "sequence" && (
+                    <EntnoGenerator
+                      value={ctrl.entnoFormat}
+                      lastNumber={123}
+                      user={"ADMIN"} // You can get it from auth context
+                      onChange={(formatted, template) =>
+                        updateControl(ctrl.id, "entnoFormat", template)
+                      }
+                    />
+                  )}{" "}
+                {ctrl.controlType !== "checkbox" && (
+                  <ConditionalControl
+                    condition={ctrl.conditionalVisibility}
+                    onChange={(val) =>
+                      updateControl(ctrl.id, "conditionalVisibility", val)
+                    }
+                  />
+                )}
+                {ctrl.controlType !== "checkbox" && (
+                  <input
+                    style={{
+                      boxShadow: "none",
+                      width: "100px",
+                      cursor: "pointer",
+                    }}
+                    title="Read Only"
+                    type="checkbox"
+                    checked={ctrl.readOnly || false}
+                    onChange={(e) =>
+                      updateControl(ctrl.id, "readOnly", e.target.checked)
+                    }
+                    placeholder="ReadOnly"
+                  />
+                )}
+                <button
+                  type="button"
+                  onClick={() => removeControl(ctrl.id)}
+                  className="remove-control-btn"
+                >
+                  ❌
+                </button>
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "5px",
+                    alignItems: "center",
+                    marginTop: "5px",
+                  }}
+                >
+                  <select
+                    value=""
+                    onChange={(e) => {
+                      const [pos, type] = e.target.value.split("|");
+                      if (pos === "above") addControl(type, index);
+                      else if (pos === "below") addControl(type, index + 1);
+                    }}
+                  >
+                    <option value="">➕ Add Control...</option>
+                    <option value={`above|input`}>⬆️ Input Above</option>
+                    <option value={`above|dropdown`}>⬆️ Dropdown Above</option>
+                    <option value={`above|checkbox`}>⬆️ Checkbox Above</option>
+                    <option value={`below|input`}>⬇️ Input Below</option>
+                    <option value={`below|dropdown`}>⬇️ Dropdown Below</option>
+                    <option value={`below|checkbox`}>⬇️ Checkbox Below</option>
                   </select>
-                </>
-              )}
-              {/* ✅ Required Toggle */}
-              <select
-                value={ctrl.required ? "true" : "false"}
-                onChange={(e) =>
-                  updateControl(ctrl.id, "required", e.target.value === "true")
-                }
-                className="required-toggle"
-              >
-                <option value="false">Required: No</option>
-                <option value="true">Required: Yes</option>
-              </select>
-
-              <button
-                type="button"
-                onClick={() => removeControl(ctrl.id)}
-                className="remove-control-btn"
-              >
-                ❌
-              </button>
-            </div>
-          ))}
-        </div>
-
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
         <button type="submit" className="save-button">
           {id ? "Update" : "Save"}
         </button>
