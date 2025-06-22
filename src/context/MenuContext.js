@@ -56,7 +56,7 @@ export const MenuProvider = ({ children }) => {
         //   - "nested-submenu": Form inside a nested submenu (both MenuName and ParentSubmenuName exist).
         //   - "top-level": Form not associated with any menu (rare)
         const forms = data
-          .filter((item) => item.tablename)
+          .filter((item) => item.tablename && item.Active)
           .map((form) => {
             const hasMenuName = !!form.MenuName?.trim();
             const hasParentSubmenu = !!form.ParentSubmenuName?.trim();

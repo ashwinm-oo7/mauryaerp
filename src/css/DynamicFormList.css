@@ -1,11 +1,12 @@
+/* Core Layout */
 .df-list-container {
   padding: 20px;
   background-color: #f9fafb;
   border-radius: 12px;
   box-shadow: 0 4px 14px rgba(0, 0, 0, 0.06);
+  font-family: 'Segoe UI', sans-serif;
   max-width: 100%;
   overflow-x: auto;
-  font-family: 'Segoe UI', sans-serif;
 }
 
 .df-list-title {
@@ -15,30 +16,29 @@
   color: #111827;
 }
 
+/* Table View */
 .df-table-wrapper {
   overflow-x: auto;
+  margin-top: 20px;
 }
 
 .df-table {
   width: 100%;
   border-collapse: collapse;
-  background-color: white;
+  background-color: #fff;
+  border: 1px solid #d1d5db;
   border-radius: 8px;
-  overflow: hidden;
 }
 
-.df-th,
-.df-td {
+.df-thead {
+  background-color: #f3f4f6;
+}
+
+.df-th, .df-td {
   padding: 12px 16px;
   text-align: left;
   font-size: 14px;
   border-bottom: 1px solid #e5e7eb;
-}
-
-.df-th {
-  background-color: #f3f4f6;
-  color: #1f2937;
-  font-weight: 600;
 }
 
 .df-tr:hover {
@@ -51,63 +51,111 @@
   align-items: center;
 }
 
-.df-btn {
+/* Button Styles */
+.df-btn,
+.vs-btn {
   padding: 6px 12px;
   border: none;
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 500;
   border-radius: 6px;
   cursor: pointer;
-  transition: background 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
-.df-btn-edit {
-  background-color: #3b82f6;
+.df-btn-edit,
+.vs-btn-edit {
+  background-color: #0923cf;
+  color: white;
+  width: 82px;
+}
+
+.df-btn-delete,
+.vs-btn-delete {
+  background-color: #f70101;
   color: white;
 }
 
-.df-btn-edit:hover {
-  background-color: #2563eb;
+.df-btn:hover,
+.vs-btn:hover {
+  opacity: 0.6;
 }
 
-.df-btn-delete {
-  background-color: #ef4444;
-  color: white;
-}
-
-.df-btn-delete:hover {
-  background-color: #dc2626;
-}
-
-
+/* Single Card View */
 .df-card-view {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 20px;
 }
 
 .df-card {
-  background-color: #ffffff;
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
   padding: 24px;
   width: 100%;
-  max-width: 600px;
-  border-radius: 12px;
+  max-width: 1200px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  margin-bottom: 20px;
   animation: fadeIn 0.3s ease-in-out;
+  margin-bottom: 20px;
+  text-align: left;
 }
 
 .df-card-field {
-  margin-bottom: 12px;
-  font-size: 15px;
-  color: #374151;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 12px;
+    row-gap: 5px;
+}
+.df-card-field label {
+  width: 150px; /* consistent label width */
+  font-weight: 500;
+  font-size: 14px;
+  color: #333;
+}
+.df-card-field input,
+.df-card-field select,
+.df-card-field textarea {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .df-card-field strong {
-  display: inline-block;
-  width: 150px;
+  display: block;
+  font-size: 13px;
+  margin-bottom: 4px;
+  color: #374151;
   font-weight: 600;
-  color: #111827;
+}
+
+
+.df-card-field span {
+    display: block;
+    background-color: #f9fafb;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 10px 10px;
+    font-size: 14px;
+    color: #111827;
+    width: 240px;
+    margin-right: 20px;
+}
+
+
+.df-card-field span.checkbox-value {
+  background-color: transparent;
+  border: none;
+  padding: 10px;
+  font-size: 18px;
+  color: #10b981;
+  text-align: center;
 }
 
 .df-card-actions {
@@ -117,11 +165,13 @@
   margin-top: 20px;
 }
 
+/* Card Navigation */
 .df-card-nav {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 20px;
+  gap: 12px;
+  margin-top: 20px;
 }
 
 .df-card-nav button {
@@ -132,6 +182,8 @@
   color: #1f2937;
   cursor: pointer;
   transition: all 0.2s ease;
+  font-weight: 500;
+  width: 110px;
 }
 
 .df-card-nav button:hover:not(:disabled) {
@@ -140,88 +192,89 @@
   color: #1d4ed8;
 }
 
+.df-card-nav button:disabled {
+  background-color: #e5e7eb;
+  color: #9ca3af;
+  cursor: not-allowed;
+  border-color: #d1d5db;
+}
+
 .df-card-nav span {
   font-weight: 500;
   color: #4b5563;
 }
-.df-card-nav button:disabled {
-  background-color: #e5e7eb; /* light gray */
-  color: #9ca3af;            /* muted text */
-  cursor: not-allowed;
-  border-color: #d1d5db;
-}
+
+/* Grid View */
 .vs-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
 }
 
 .vs-card {
+  background: #f9fafb;
   border: 1px solid #e5e7eb;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 16px;
-  background-color: #fff;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .vs-card-content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
+  margin-bottom: 10px;
 }
 
 .vs-field {
   display: flex;
-  justify-content: space-between;
-  border-bottom: 1px dashed #eee;
-  padding: 4px 0;
-  font-size: 14px;
+  flex-direction: column;
+  padding: 6px 0;
+  border-bottom: 1px dashed #d1d5db;
 }
 
 .vs-label {
   font-weight: 600;
-  color: #4b5563;
-  flex: 1;
+  font-size: 13px;
+  color: #374151;
+  margin-bottom: 2px;
 }
 
 .vs-value {
-  flex: 1;
-  text-align: right;
+  font-size: 14px;
+  padding: 6px 10px;
+  background-color: #f3f4f6;
+  border-radius: 6px;
+  width: 100%;
+  color: #111827;
   word-break: break-word;
 }
 
 .vs-card-actions {
-  margin-top: 12px;
   display: flex;
   justify-content: flex-end;
   gap: 8px;
+  margin-top: 12px;
 }
 
-.vs-btn {
+/* Inputs and Dropdowns */
+select,
+input[type="text"] {
+  font-size: 14px;
   padding: 6px 10px;
-  font-size: 13px;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  outline: none;
 }
 
-.vs-btn-edit {
-  background-color: #2563eb;
-  color: white;
+select:focus,
+input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
 }
 
-.vs-btn-delete {
-  background-color: #dc2626;
-  color: white;
-}
-
-.vs-btn:disabled {
-  background-color: #9ca3af;
-  cursor: not-allowed;
-}
-
-
-/* Optional animation */
+/* Animation */
 @keyframes fadeIn {
   from {
     opacity: 0;
@@ -233,8 +286,7 @@
   }
 }
 
-
-/* Responsive */
+/* Responsive Table View (Mobile-Friendly) */
 @media (max-width: 768px) {
   .df-table,
   .df-thead,
@@ -276,177 +328,21 @@
   .df-action-cell {
     justify-content: flex-end;
   }
-}
-/* Core Wrapper */
-.df-card-view,
-.vs-cards,
-.df-table-wrapper {
-  margin-top: 20px;
-}
 
-/* Single Card View */
-.df-card {
-  background: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-  padding: 20px;
-  max-width: 500px;
-  margin: 0 auto;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.06);
-}
+  .df-card {
+    padding: 16px;
+    max-width: 100%;
+  }
 
-.df-card-field {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  padding-bottom: 4px;
-  border-bottom: 1px dashed #e5e7eb;
-}
+  .df-card-field strong {
+    font-size: 12px;
+  }
 
-.df-card-actions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
+  .df-card-field span {
+    font-size: 13px;
+  }
 
-/* Grid Cards */
-.vs-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-}
-
-.vs-card {
-  background: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-}
-
-.vs-card-content {
-  margin-bottom: 10px;
-}
-
-.vs-field {
-  display: flex;
-  justify-content: space-between;
-  padding: 4px 0;
-  border-bottom: 1px dashed #d1d5db;
-}
-
-.vs-label {
-  font-weight: 500;
-  color: #374151;
-}
-
-.vs-value {
-  color: #4b5563;
-}
-
-/* Card Buttons */
-.df-btn,
-.vs-btn {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.df-btn-edit,
-.vs-btn-edit {
-  background-color: #0923cf;
-  color: #ffffff;
-}
-
-.df-btn-delete,
-.vs-btn-delete {
-  background-color: #f70101;
-  color: #ffffff;
-}
-
-.df-btn:hover,
-.vs-btn:hover {
-  opacity: 0.6;
-}
-
-/* Navigation Buttons */
-.df-card-nav {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin-top: 20px;
-}
-
-.df-card-nav button {
-  font-weight: 500;
-}
-
-/* Table Styling */
-.df-table-wrapper {
-  overflow-x: auto;
-}
-
-.df-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #fff;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
-}
-
-.df-thead {
-  background-color: #f3f4f6;
-}
-
-.df-th,
-.df-td {
-  padding: 10px 12px;
-  text-align: left;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.df-action-cell {
-  display: flex;
-  gap: 8px;
-}
-
-/* Dropdowns, Inputs */
-select,
-input[type="text"] {
-  font-size: 14px;
-  padding: 6px 10px;
-  border: 1px solid #d1d5db;
-  border-radius: 6px;
-  outline: none;
-}
-
-select:focus,
-input:focus {
-  border-color: #3b82f6;
-  box-shadow: 0 0 0 1px #3b82f6;
-}
-
-/* View Switcher Buttons (optional) */
-.view-switcher {
-  display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
-}
-
-.view-switcher button {
-  padding: 8px 12px;
-  border: 1px solid #d1d5db;
-  background-color: #fff;
-  border-radius: 6px;
-  cursor: pointer;
-}
-
-.view-switcher .active {
-  background-color: #e0f2fe;
-  border-color: #3b82f6;
-  font-weight: bold;
+  .vs-cards {
+    grid-template-columns: 1fr;
+  }
 }

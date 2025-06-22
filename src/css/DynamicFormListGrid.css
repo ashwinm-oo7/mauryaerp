@@ -1,0 +1,35 @@
+.grid-table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin-top: 8px;
+    -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
+
+}
+
+.mini-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  font-size: 14px;
+  min-width: 600px;
+}
+
+.mini-grid-table th,
+.mini-grid-table td {
+  padding: 10px 12px;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+  min-width: 100px;
+}
+
+.mini-grid-table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+  color: #374151;
+}
+.df-card-grid {
+  align-items: stretch;
+  width: 100%;
+}

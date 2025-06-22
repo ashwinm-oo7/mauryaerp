@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../css/DynamicFormList.css";
+import "../css/DynamicFormListGrid.css";
 
 const PAGE_SIZE = 6;
 
@@ -85,16 +86,58 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
     return (
       <div className="df-card-view">
         <div className="df-card">
-          {controls.map(({ controlType, label, options = [] }) => (
-            <div key={label} className="df-card-field">
-              <strong>{controlType === "checkbox" ? label : options}:</strong>{" "}
-              {controlType === "checkbox"
-                ? row[label]
-                  ? "✅"
-                  : "❌"
-                : row[label] || "-"}
-            </div>
-          ))}
+          {controls.map(({ controlType, label, options = [] }) => {
+            const value = row[label];
+
+            return (
+              <div
+                key={label}
+                className={` ${
+                  controlType === "grid" ? "df-card-grid" : "df-card-field"
+                }`}
+              >
+                <strong>{controlType === "checkbox" ? label : options}</strong>{" "}
+                <span
+                  className={controlType === "checkbox" ? "checkbox-value" : ""}
+                >
+                  {controlType === "checkbox" ? (
+                    value ? (
+                      "✅"
+                    ) : (
+                      "❌"
+                    )
+                  ) : controlType === "grid" &&
+                    Array.isArray(value) &&
+                    value.length > 0 ? (
+                    <div className="grid-table-wrapper">
+                      <table className="mini-grid-table">
+                        <thead>
+                          <tr>
+                            {Object.keys(value[0]).map((colKey) => (
+                              <th key={colKey}>{colKey}</th>
+                            ))}
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {value.map((item, rowIdx) => (
+                            <tr key={rowIdx}>
+                              {Object.keys(item).map((colKey) => (
+                                <td key={colKey}>{item[colKey]}</td>
+                              ))}
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  ) : typeof value === "object" ? (
+                    JSON.stringify(value)
+                  ) : (
+                    value || "-"
+                  )}
+                </span>
+              </div>
+            );
+          })}
           <div className="df-card-actions">
             <button onClick={() => onEdit(row)} className="df-btn df-btn-edit">
               ✏️ Edit
@@ -169,6 +212,8 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
                         ? row[label]
                           ? "✅"
                           : "❌"
+                        : typeof row[label] === "object"
+                        ? JSON.stringify(row[label])
                         : row[label] || "-"}
                     </div>
                   </div>
@@ -259,6 +304,8 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
                     ? row[control.label]
                       ? "✅"
                       : "❌"
+                    : typeof row[control.label] === "object"
+                    ? JSON.stringify(row[control.label])
                     : row[control.label] || "-"}
                 </td>
               ))}

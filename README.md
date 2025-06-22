@@ -61,6 +61,31 @@ In the project directory, you can run:
 | 💿     | Save (CD metaphor, less common today)   |
 | 📤     | Upload (used if saving to cloud/server) |
 
+## ✅ Plan: How to Do It the Dynamic Way
+Extend your controls system:
+
+Add a new control type called "grid" or "lineitems" in the controls array.
+
+That control has a subControls property — which is an array of fields (just like your top controls).
+
+Render a custom GridDynamicControl component for that.
+
+### ✅ Step 1: Example Data in controls
+Here’s what an entry in formData.controls could look like for the line item grid:
+
+```
+{
+  id: "grid1",
+  controlType: "grid",
+  label: "LineItems",
+  subControls: [
+    { label: "Product", controlType: "dropdown", options: ["P1", "P2"], required: true },
+    { label: "Rate", controlType: "input", dataType: "decimal", required: true },
+    { label: "Qty", controlType: "input", dataType: "int", required: true }
+  ]
+}
+```
+
 ### `npm start`
 
 Runs the app in the development mode.\
