@@ -9,13 +9,14 @@ import { LoadingContext } from "../context/LoadingContext";
 import EntnoGenerator from "../reusable/EntnoGenerator";
 import DynamicControl from "../reusable/DynamicControl";
 import ConditionalControl from "../reusable/ConditionalControl";
-import GridDynamicControl from "../reusable/GridDynamicControl";
 
 const MenuRegistration = () => {
   const { saberpmenu } = useContext(MenuContext);
   const { id } = useParams(); // For edit mode
   const isEdit = Boolean(id);
   const Navigate = useNavigate();
+  const [draggedIndex, setDraggedIndex] = useState(null);
+  const [draggedSubIndex, setDraggedSubIndex] = useState(null); //Grid
 
   const { setIsLoading } = useContext(LoadingContext);
 
@@ -31,10 +32,50 @@ const MenuRegistration = () => {
     controls: [], // Array of dynamic fields
   });
   console.log("formData", formData.controls);
-  const [formValues, setFormValues] = useState({});
+  const handleDragStart = (index) => {
+    setDraggedIndex(index);
+  };
 
-  const handleControlChange = (field, value) => {
-    setFormValues((prev) => ({ ...prev, [field]: value }));
+  const handleDragEnter = (index) => {
+    if (index === draggedIndex) return;
+    const updatedControls = [...formData.controls];
+    const draggedItem = updatedControls[draggedIndex];
+    updatedControls.splice(draggedIndex, 1);
+    updatedControls.splice(index, 0, draggedItem);
+    setDraggedIndex(index);
+    setFormData((prev) => ({
+      ...prev,
+      controls: updatedControls,
+    }));
+  };
+
+  const handleDragEnd = () => {
+    setDraggedIndex(null);
+  };
+  const handleSubDragStart = (subIdx) => {
+    setDraggedSubIndex(subIdx);
+  };
+
+  const handleSubDragEnter = (ctrlId, subIdx) => {
+    if (draggedSubIndex === null || draggedSubIndex === subIdx) return;
+
+    const updatedControls = formData.controls.map((ctrl) => {
+      if (ctrl.id === ctrlId) {
+        const subControls = [...(ctrl.subControls || [])];
+        const draggedItem = subControls[draggedSubIndex];
+        subControls.splice(draggedSubIndex, 1);
+        subControls.splice(subIdx, 0, draggedItem);
+        return { ...ctrl, subControls };
+      }
+      return ctrl;
+    });
+
+    setDraggedSubIndex(subIdx);
+    setFormData((prev) => ({ ...prev, controls: updatedControls }));
+  };
+
+  const handleSubDragEnd = () => {
+    setDraggedSubIndex(null);
   };
 
   useEffect(() => {
@@ -163,13 +204,6 @@ const MenuRegistration = () => {
       alert("❌ Label must be unique. This value is already used.");
     }
   };
-
-  // const updateControl = (id, field, value) => {
-  //   const updatedControls = formData.controls.map((ctrl) =>
-  //     ctrl.id === id ? { ...ctrl, [field]: value } : ctrl
-  //   );
-  //   setFormData((prev) => ({ ...prev, controls: updatedControls }));
-  // };
 
   const updateControl = (id, field, value) => {
     const updatedControls = formData.controls.map((ctrl) => {
@@ -470,7 +504,25 @@ const MenuRegistration = () => {
 
             {formData.controls.map((ctrl, index) => (
               <>
-                <div key={ctrl.id} className="control-row">
+                <div
+                  key={ctrl.id}
+                  className="control-row"
+                  draggable
+                  onDragStart={() => handleDragStart(index)}
+                  onDragEnter={() => handleDragEnter(index)}
+                  onDragEnd={handleDragEnd}
+                  onDragOver={(e) => e.preventDefault()} // allow drop
+                  style={{
+                    border:
+                      draggedIndex === index
+                        ? "2px dashed #4a90e2"
+                        : "1px solid #ccc",
+                    padding: "10px",
+                    marginBottom: "10px",
+                    backgroundColor: "#fff",
+                    cursor: "move",
+                  }}
+                >
                   <label style={{ width: "" }}>{ctrl.controlType} Label:</label>
                   <>
                     <input
@@ -725,7 +777,7 @@ const MenuRegistration = () => {
                                   length: "",
                                   required: false,
                                   readOnly: false,
-                                  options: [],
+                                  header: "",
                                   sabtable: "",
                                   entnoFormat: "",
                                   autoGenerate: false,
@@ -746,17 +798,49 @@ const MenuRegistration = () => {
                     </button>
 
                     {(ctrl.subControls || []).map((subCtrl, subIdx) => (
-                      <div key={subCtrl.id} className="sub-control-row">
+                      <div
+                        key={subCtrl.id}
+                        className="sub-control-row"
+                        draggable
+                        onDragStart={() => handleSubDragStart(subIdx)}
+                        onDragEnter={() => handleSubDragEnter(ctrl.id, subIdx)}
+                        onDragEnd={handleSubDragEnd}
+                        onDragOver={(e) => e.preventDefault()}
+                        style={{
+                          border:
+                            draggedSubIndex === subIdx
+                              ? "2px dashed #4a90e2"
+                              : "1px solid #ddd",
+                          padding: "10px",
+                          marginBottom: "10px",
+                          backgroundColor: "#f9f9f9",
+                          cursor: "move",
+                        }}
+                      >
                         {/* Label */}
                         <input
                           type="text"
-                          placeholder="Label"
+                          placeholder="Column Name"
                           value={subCtrl.label}
                           onChange={(e) =>
                             updateSubControl(
                               ctrl.id,
                               subIdx,
                               "label",
+                              e.target.value
+                            )
+                          }
+                        />
+                        {/* Label */}
+                        <input
+                          type="text"
+                          placeholder="Header Name"
+                          value={subCtrl.header}
+                          onChange={(e) =>
+                            updateSubControl(
+                              ctrl.id,
+                              subIdx,
+                              "header",
                               e.target.value
                             )
                           }
@@ -857,21 +941,6 @@ const MenuRegistration = () => {
                         {/* Dropdown Options or sabtable */}
                         {subCtrl.controlType === "dropdown" && (
                           <>
-                            <input
-                              type="text"
-                              placeholder="Options (comma separated)"
-                              value={subCtrl.options?.join(", ")}
-                              onChange={(e) =>
-                                updateSubControl(
-                                  ctrl.id,
-                                  subIdx,
-                                  "options",
-                                  e.target.value
-                                    .split(",")
-                                    .map((opt) => opt.trim())
-                                )
-                              }
-                            />
                             <select
                               value={subCtrl.sabtable}
                               onChange={(e) =>

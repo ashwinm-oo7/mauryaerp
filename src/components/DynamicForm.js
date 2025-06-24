@@ -367,7 +367,7 @@ const DynamicForm = ({
 
             return (
               <div key={label} className="dynamic-grid-wrapper">
-                <label className="block font-bold mb-2">{label}</label>
+                {/* <label className="block font-bold mb-2">{label}</label> */}
                 <div className="dynamic-grid-scroll-container">
                   <div
                     className="grid-header "
@@ -375,16 +375,15 @@ const DynamicForm = ({
                   >
                     {control.subControls.map((sub) => (
                       <div
-                        key={sub.label}
+                        key={sub.header}
                         className="grid-cell-header grid-data-row"
                       >
                         <input
                           className="grid-input grid-header-input"
-                          value={sub?.label?.toUpperCase()}
+                          value={sub?.header?.toUpperCase()}
                           readOnly
                           tabIndex={-1}
                         />
-                        {/* {sub.label} */}
                       </div>
                     ))}
                     <div className="grid-cell-header grid-data-row">
@@ -410,16 +409,16 @@ const DynamicForm = ({
 
                         switch (sub.controlType) {
                           case "input":
+                            const isNumberField = [
+                              "int",
+                              "decimal",
+                              "bigint",
+                            ].includes(sub.dataType);
+
                             return (
                               <input
                                 key={subLabel}
-                                type={
-                                  ["int", "decimal", "bigint"].includes(
-                                    sub.dataType
-                                  )
-                                    ? "number"
-                                    : "text"
-                                }
+                                type={isNumberField ? "number" : "text"}
                                 placeholder={subLabel}
                                 value={value}
                                 className="grid-input"
@@ -431,6 +430,7 @@ const DynamicForm = ({
                                     e.target.value
                                   )
                                 }
+                                {...(isNumberField ? { min: 0 } : {})}
                               />
                             );
 

@@ -1,35 +1,85 @@
-.grid-table-wrapper {
+/* Classic grid field container */
+.classic-grid-container {
   width: 100%;
-  overflow-x: auto;
-  margin-top: 8px;
-    -webkit-overflow-scrolling: touch; /* smooth scrolling on iOS */
-
+  margin-bottom: 24px;
 }
 
-.mini-grid-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #ffffff;
-  border: 1px solid #d1d5db;
-  border-radius: 8px;
+/* Grid label */
+.classic-grid-label {
+  display: block;
   font-size: 14px;
-  min-width: 600px;
-}
-
-.mini-grid-table th,
-.mini-grid-table td {
-  padding: 10px 12px;
-  border: 1px solid #e5e7eb;
-  text-align: left;
-  min-width: 100px;
-}
-
-.mini-grid-table th {
-  background-color: #f3f4f6;
   font-weight: 600;
   color: #374151;
+  margin-bottom: 8px;
 }
-.df-card-grid {
-  align-items: stretch;
-  width: 100%;
+
+/* Checkbox visual */
+.classic-checkbox-value {
+  font-size: 18px;
+  color: #10b981;
+}
+
+/* Wrapper for scrollable table-like grid */
+.classic-grid-wrapper {
+  overflow-x: auto;
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  background: #f9fafb;
+  padding: 12px;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Grid table layout (flex-based) */
+.classic-grid-table {
+  display: flex;
+  flex-direction: column;
+  min-width: 700px;
+}
+
+/* Header row */
+.classic-grid-header {
+  display: flex;
+  background-color: #f3f4f6;
+  font-weight: 600;
+  color: #1f2937;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+/* Each data row */
+.classic-grid-row {
+  display: flex;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+/* Each cell */
+.classic-grid-cell {
+  flex: 1;
+  min-width: 120px;
+  padding: 10px;
+  border-right: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #111827;
+  background: #ffffff;
+}
+
+/* Header cell override */
+.classic-grid-cell.header {
+  background-color: #f3f4f6;
+}
+
+/* Remove last cell border */
+.classic-grid-row .classic-grid-cell:last-child,
+.classic-grid-header .classic-grid-cell:last-child {
+  border-right: none;
+}
+
+/* Fallback display */
+.classic-grid-default-value {
+  display: inline-block;
+  padding: 8px 12px;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 6px;
+  font-size: 14px;
+  color: #111827;
 }

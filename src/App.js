@@ -6,6 +6,7 @@ import MenuRegistration from "./components/MenuRegistration";
 import "./App.css";
 import MenuRegistrationList from "./components/MenuRegistrationList";
 import FormRenderer from "./components/FormRenderer";
+import Backup from "./reusable/Backup";
 
 function App() {
   return (
@@ -23,6 +24,8 @@ function App() {
         <Route path="/menuregistration/:id" element={<MenuRegistration />} />
 
         <Route path="/:bname" element={<FormRenderer />} />
+        <Route path="/backup" element={<Backup />} />
+
         <Route
           path="/menuregistrationlist"
           element={<MenuRegistrationList />}

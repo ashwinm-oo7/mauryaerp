@@ -226,7 +226,7 @@
 }
 
 .sub-control-row button {
-  background-color: #ff4d4d;
+  background-color: #c10505;
   border: none;
   color: white;
   padding: 5px 10px;
@@ -261,3 +261,11 @@
   background-color: #0056b3;
 }
 
+
+.control-row {
+  transition: all 0.2s ease-in-out;
+}
+
+.control-row:active {
+  opacity: 0.6;
+}

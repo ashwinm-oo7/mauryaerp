@@ -33,7 +33,7 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
     };
     fetchData();
   }, [tablename, refreshTrigger]);
-
+  console.log("Form Colum records Data", data);
   // Apply sort & filter whenever data, sortField, or filter changes
   useEffect(() => {
     let temp = [...data];
@@ -92,52 +92,55 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
             return (
               <div
                 key={label}
-                className={` ${
-                  controlType === "grid" ? "df-card-grid" : "df-card-field"
-                }`}
+                className={
+                  controlType === "grid"
+                    ? "classic-grid-container"
+                    : "df-card-field"
+                }
               >
-                <strong>{controlType === "checkbox" ? label : options}</strong>{" "}
-                <span
-                  className={controlType === "checkbox" ? "checkbox-value" : ""}
-                >
-                  {controlType === "checkbox" ? (
-                    value ? (
-                      "✅"
-                    ) : (
-                      "❌"
-                    )
-                  ) : controlType === "grid" &&
-                    Array.isArray(value) &&
-                    value.length > 0 ? (
-                    <div className="grid-table-wrapper">
-                      <table className="mini-grid-table">
-                        <thead>
-                          <tr>
-                            {Object.keys(value[0]).map((colKey) => (
-                              <th key={colKey}>{colKey}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {value.map((item, rowIdx) => (
-                            <tr key={rowIdx}>
-                              {Object.keys(item).map((colKey) => (
-                                <td key={colKey}>{item[colKey]}</td>
-                              ))}
-                            </tr>
+                <strong className="classic-grid-label">
+                  {controlType === "checkbox" ? label : options}
+                </strong>
+
+                {controlType === "checkbox" ? (
+                  <span className="classic-checkbox-value">
+                    {value ? "✅" : "❌"}
+                  </span>
+                ) : controlType === "grid" &&
+                  Array.isArray(value) &&
+                  value.length > 0 ? (
+                  <div className="classic-grid-wrapper">
+                    <div className="classic-grid-table">
+                      <div className="classic-grid-header">
+                        {Object.keys(value[0]).map((colKey) => (
+                          <div
+                            className="classic-grid-cell header"
+                            key={colKey}
+                          >
+                            {colKey}
+                          </div>
+                        ))}
+                      </div>
+                      {value.map((rowData, rowIndex) => (
+                        <div className="classic-grid-row" key={rowIndex}>
+                          {Object.entries(rowData).map(([col, val]) => (
+                            <div className="classic-grid-cell" key={col}>
+                              {val || "-"}
+                            </div>
                           ))}
-                        </tbody>
-                      </table>
+                        </div>
+                      ))}
                     </div>
-                  ) : typeof value === "object" ? (
-                    JSON.stringify(value)
-                  ) : (
-                    value || "-"
-                  )}
-                </span>
+                  </div>
+                ) : (
+                  <span className="classic-grid-default-value">
+                    {value || "-"}
+                  </span>
+                )}
               </div>
             );
           })}
+
           <div className="df-card-actions">
             <button onClick={() => onEdit(row)} className="df-btn df-btn-edit">
               ✏️ Edit
