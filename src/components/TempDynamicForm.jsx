@@ -5,7 +5,6 @@ import "../css/DynamicForm.css";
 import "../css/DynamicFormGrid.css";
 
 import { LoadingContext } from "../context/LoadingContext";
-import DynamicGridFormula from "../reusable/DynamicGridFormula";
 
 const DynamicForm = ({
   formMeta,
@@ -162,6 +161,21 @@ const DynamicForm = ({
     });
   };
 
+  const addGridRow = (gridLabel) => {
+    setGridData((prev) => ({
+      ...prev,
+      [gridLabel]: [...(prev[gridLabel] || []), {}],
+    }));
+  };
+
+  const removeGridRow = (gridLabel, rowIndex) => {
+    setGridData((prev) => {
+      const updatedRows = [...(prev[gridLabel] || [])];
+      updatedRows.splice(rowIndex, 1);
+      return { ...prev, [gridLabel]: updatedRows };
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -235,8 +249,6 @@ const DynamicForm = ({
       setIsLoading(false);
     }
   };
-  const hasGrid = controls.some((control) => control.controlType === "grid");
-  const formClassName = hasGrid ? "" : "space-y-4";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -350,15 +362,152 @@ const DynamicForm = ({
               </div>
             );
           case "grid":
+            const columnCount = control.subControls.length + 1; // +1 for "Actions"
+            const gridTemplate = `repeat(${columnCount}, minmax(140px, 1fr))`;
+
             return (
-              <DynamicGridFormula
-                key={label}
-                label={label}
-                subControls={control.subControls}
-                gridData={gridData}
-                setGridData={setGridData}
-                dropdownOptions={dropdownOptions}
-              />
+              <div key={label} className="dynamic-grid-wrapper">
+                {/* <label className="block font-bold mb-2">{label}</label> */}
+                <div className="dynamic-grid-scroll-container">
+                  <div
+                    className="grid-header "
+                    style={{ gridTemplateColumns: gridTemplate }}
+                  >
+                    {control.subControls.map((sub) => (
+                      <div
+                        key={sub.header}
+                        className="grid-cell-header grid-data-row"
+                      >
+                        <input
+                          className="grid-input grid-header-input"
+                          value={sub?.header?.toUpperCase()}
+                          readOnly
+                          tabIndex={-1}
+                        />
+                      </div>
+                    ))}
+                    <div className="grid-cell-header grid-data-row">
+                      {" "}
+                      <input
+                        className="grid-input grid-header-input"
+                        value="Actions"
+                        readOnly
+                        tabIndex={-1}
+                      />
+                    </div>
+                  </div>
+
+                  {(gridData[label] || []).map((row, rowIndex) => (
+                    <div
+                      key={rowIndex}
+                      className="grid-data-row"
+                      style={{ gridTemplateColumns: gridTemplate }}
+                    >
+                      {control.subControls.map((sub) => {
+                        const subLabel = sub.label;
+                        const value = row[subLabel] || "";
+
+                        switch (sub.controlType) {
+                          case "input":
+                            const isNumberField = [
+                              "int",
+                              "decimal",
+                              "bigint",
+                            ].includes(sub.dataType);
+
+                            return (
+                              <input
+                                key={subLabel}
+                                type={isNumberField ? "number" : "text"}
+                                placeholder={subLabel}
+                                value={value}
+                                className="grid-input"
+                                onChange={(e) =>
+                                  handleGridChange(
+                                    label,
+                                    rowIndex,
+                                    subLabel,
+                                    e.target.value
+                                  )
+                                }
+                                {...(isNumberField ? { min: 0 } : {})}
+                              />
+                            );
+
+                          case "dropdown":
+                            const optionsKey = `${label}__${subLabel}`;
+                            const options = dropdownOptions[optionsKey] || [];
+                            return (
+                              <select
+                                key={subLabel}
+                                value={value}
+                                className="grid-select"
+                                onChange={(e) =>
+                                  handleGridChange(
+                                    label,
+                                    rowIndex,
+                                    subLabel,
+                                    e.target.value
+                                  )
+                                }
+                              >
+                                <option value="">Select {subLabel}</option>
+                                {options.map((opt) => (
+                                  <option key={opt.value} value={opt.label}>
+                                    {opt.label}
+                                  </option>
+                                ))}
+                              </select>
+                            );
+
+                          case "checkbox":
+                            return (
+                              <label
+                                key={subLabel}
+                                className="grid-checkbox-label"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={!!value}
+                                  onChange={(e) =>
+                                    handleGridChange(
+                                      label,
+                                      rowIndex,
+                                      subLabel,
+                                      e.target.checked
+                                    )
+                                  }
+                                />
+                                {subLabel}
+                              </label>
+                            );
+
+                          default:
+                            return (
+                              <span key={subLabel} className="text-red-600">
+                                Unknown sub-control type: {sub.controlType}
+                              </span>
+                            );
+                        }
+                      })}
+                      <button
+                        type="button"
+                        className="remove-row-btn"
+                        onClick={() => removeGridRow(label, rowIndex)}
+                      >
+                        ❌ Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                <button
+                  type="button"
+                  className="add-row-btn"
+                  onClick={() => addGridRow(label)}
+                >
+                  ➕ Add Row
+                </button>
+              </div>
             );
 
           default:

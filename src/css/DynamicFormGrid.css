@@ -1,139 +1,150 @@
-/* === Grid Container === */
+/* === WRAPPER === */
 .dynamic-grid-wrapper {
-  grid-column: 1 / -1; /* Full width of the form */
-  margin-top: 20px;
-  padding: 16px;
+  grid-column: 1 / -1;
+  margin: 2rem 0;
+  padding: 1rem;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
   background-color: #f9fafb;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
 }
 
-/* === Each Grid Row === */
-
-/* === Subcontrol Inputs in Grid === */
-.grid-input,
-.grid-select {
-  height: 36px;
-  padding: 0 10px;
-  font-size: 13px;
-  border: 1px solid #cbd5e0;
-  border-radius: 4px;
-  outline: none;
-}
-
-.grid-input:focus,
-.grid-select:focus {
-  border-color: #3182ce;
-  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
-}
-
-/* === Remove Row Button === */
-.remove-row-btn {
-    position: static;
-  top: 8px;
-  right: 8px;
-  background-color: #f87171;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  padding: 4px 8px;
-  font-size: 12px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.remove-row-btn:hover {
-  background-color: #dc2626;
-}
-
-/* === Add Row Button === */
-.add-row-btn {
-  margin-top: 10px;
-  padding: 6px 12px;
-  background-color: #10b981;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.add-row-btn:hover {
-  background-color: #059669;
-}
-
-
-
-/* Remove extra conflicting grid-row styles first */
-.grid-row {
-  display: contents; /* Let each grid area define its own layout */
-}
-
-/* Header */
-.grid-header {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) auto;
-  background-color: #f9fafb;
-  font-weight: 600;
-  padding: 10px;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  margin-bottom: 8px;
-}
-
-/* Header Cell */
-.grid-cell-header {
-  padding: 8px 10px;
-  font-weight: 600;
-  font-size: 14px;
-  color: #374151; /* dark gray */
-  background-color: #f3f4f6;
-  border-bottom: 1px solid #d1d5db;
-  white-space: nowrap;
-}
-
-/* Data Row */
-.grid-data-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) auto;
-  gap: 12px;
-  padding: 10px;
-  background-color: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 6px;
-  margin-bottom: 10px;
-}
-
-
-/* Scroll wrapper around grid */
-.dynamic-grid-scroll-container {
+/* === SCROLL CONTAINER === */
+.dynamic-grid-scroll {
   overflow-x: auto;
   width: 100%;
 }
 
-/* Force fixed-width layout for large column count */
-.grid-header,
-.grid-data-row {
+/* === ROW STYLES === */
+.dynamic-grid-row {
   display: grid;
-  min-width: max-content; /* prevents shrinking below natural content width */
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  gap: 8px;
+  min-width: max-content;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)) auto;
+  gap: 12px;
+  padding: 10px;
+  border-radius: 6px;
+  margin-bottom: 12px;
 }
 
-/* Optional: sticky header */
-.grid-header {
+.dynamic-grid-header {
+  background-color: #f0f0f0;
+  font-weight: 600;
+  border-bottom: 2px solid #ccc;
   position: sticky;
   top: 0;
   z-index: 1;
-  background-color: #f9fafb;
 }
 
-.grid-header-input {
-  background-color: #f3f4f6; /* light gray */
-  font-weight: 200;
+.dynamic-grid-data {
+  background-color: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+/* === HEADER CELLS === */
+.grid-header-cell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.grid-header-label {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #333;
+}
+
+/* === INPUTS === */
+.grid-cell-input,
+.grid-cell-select {
+  padding: 0.45rem;
+  font-size: 0.85rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background: #fff;
+  width: 100%;
+  box-sizing: border-box;
+  transition: border 0.2s ease;
+}
+
+.grid-cell-input:focus,
+.grid-cell-select:focus {
+  outline: none;
+  border-color: #3182ce;
+  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.3);
+}
+
+.grid-cell-select {
+  appearance: none;
+  background: url("data:image/svg+xml,%3Csvg fill='gray' height='18' viewBox='0 0 24 24' width='18' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E")
+    no-repeat right 0.75rem center/1rem;
+  background-color: #fff;
+}
+
+/* === CHECKBOX === */
+.grid-cell-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+}
+
+/* === REMOVE BUTTON === */
+.grid-remove-btn {
+  background-color: #dc3545;
+  color: white;
+  font-weight: 600;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.85rem;
   border: none;
-  pointer-events: none;
-  cursor: default;
+  border-radius: 4px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+}
+
+.grid-remove-btn:hover {
+  background-color: #b91c1c;
+}
+
+/* === ADD BUTTON === */
+.grid-add-btn {
+  background-color: #10b981;
+  color: white;
+  font-weight: 600;
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 6px;
+  margin-top: 12px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.grid-add-btn:hover {
+  background-color: #059669;
+}
+
+/* === ERROR === */
+.grid-cell-error {
+  color: #b91c1c;
+  font-size: 0.85rem;
+}
+
+/* === RESPONSIVE === */
+@media (max-width: 768px) {
+  .dynamic-grid-row {
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) auto;
+    font-size: 0.8rem;
+  }
+
+  .grid-cell-input,
+  .grid-cell-select {
+    font-size: 0.8rem;
+  }
+
+  .grid-remove-btn,
+  .grid-add-btn {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.6rem;
+  }
 }

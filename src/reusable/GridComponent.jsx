@@ -9,10 +9,16 @@ const GridComponent = ({
   updateSubControl,
 }) => {
   const [draggedSubIndex, setDraggedSubIndex] = useState(null);
+  const [selectedColumnIndex, setSelectedColumnIndex] = useState(null);
+  const [selectedColumnname, setSelectedColumnName] = useState(null);
 
-  const handleSubDragStart = (subIdx) => {
-    setDraggedSubIndex(subIdx);
-  };
+  const [operationRuleDraft, setOperationRuleDraft] = useState({
+    leftOperand: "",
+    operator: "*",
+    rightOperand: "",
+  });
+
+  const handleSubDragStart = (subIdx) => setDraggedSubIndex(subIdx);
 
   const handleSubDragEnter = (ctrlId, subIdx) => {
     if (draggedSubIndex === null || draggedSubIndex === subIdx) return;
@@ -26,9 +32,7 @@ const GridComponent = ({
     setDraggedSubIndex(subIdx);
   };
 
-  const handleSubDragEnd = () => {
-    setDraggedSubIndex(null);
-  };
+  const handleSubDragEnd = () => setDraggedSubIndex(null);
 
   const addSubControl = () => {
     const newSubControl = {
@@ -46,6 +50,7 @@ const GridComponent = ({
       entnoFormat: "",
       autoGenerate: false,
       defaultDateOption: "",
+      operationRule: null,
     };
 
     const updatedSubControls = [...(ctrl.subControls || []), newSubControl];
@@ -56,6 +61,51 @@ const GridComponent = ({
     const filtered = ctrl.subControls.filter((_, i) => i !== subIdx);
     updateControl(ctrl.id, "subControls", filtered);
   };
+
+  const addOperationRuleToColumn = (header, subIdx) => {
+    setSelectedColumnIndex(subIdx);
+    setSelectedColumnName(header);
+    setOperationRuleDraft({
+      leftOperand: "",
+      operator: "*",
+      rightOperand: "",
+    });
+  };
+
+  const saveRuleToColumn = () => {
+    if (!operationRuleDraft.leftOperand || !operationRuleDraft.rightOperand) {
+      alert("Both operands must be selected.");
+      return;
+    }
+
+    // const updatedSubControls = [...ctrl.subControls];
+    // updatedSubControls[selectedColumnIndex].operationRule = {
+    //   ...operationRuleDraft,
+    // };
+
+    // updateControl(ctrl.id, "subControls", updatedSubControls);
+    updateSubControl(ctrl.id, selectedColumnIndex, "operationRule", {
+      ...operationRuleDraft,
+    });
+
+    setSelectedColumnIndex(null);
+    setOperationRuleDraft({ leftOperand: "", operator: "*", rightOperand: "" });
+  };
+
+  const cancelRule = () => {
+    setSelectedColumnIndex(null);
+    setOperationRuleDraft({ leftOperand: "", operator: "*", rightOperand: "" });
+  };
+
+  const columnOptions =
+    ctrl.subControls?.map((c) => c.label).filter(Boolean) || [];
+
+  const numericColumns =
+    ctrl.subControls
+      ?.filter(
+        (c) => ["int", "decimal"].includes(c.dataType) && c.label?.trim()
+      )
+      .map((c) => c.label) || [];
 
   return (
     <div className="sub-grid-controls" style={{ marginLeft: "20px" }}>
@@ -154,7 +204,6 @@ const GridComponent = ({
               style={{ width: "60px" }}
             />
           )}
-
           {/* Length */}
           {subCtrl.dataType !== "nvarchar" &&
             subCtrl.dataType !== "date" &&
@@ -169,8 +218,7 @@ const GridComponent = ({
                 style={{ width: "60px" }}
               />
             )}
-
-          {/* Dropdown Options */}
+          {/* Dropdown options */}
           {subCtrl.controlType === "dropdown" && (
             <select
               value={subCtrl.sabtable}
@@ -205,7 +253,7 @@ const GridComponent = ({
             <option value="true">Required: Yes</option>
           </select>
 
-          {/* Readonly */}
+          {/* ReadOnly */}
           <label>
             <input
               type="checkbox"
@@ -213,11 +261,11 @@ const GridComponent = ({
               onChange={(e) =>
                 updateSubControl(ctrl.id, subIdx, "readOnly", e.target.checked)
               }
-            />{" "}
+            />
             ReadOnly
           </label>
 
-          {/* Sequence format */}
+          {/* Sequence Format */}
           {subCtrl.dataType === "sequence" && (
             <input
               type="text"
@@ -247,12 +295,98 @@ const GridComponent = ({
             </select>
           )}
 
-          {/* Delete sub-control */}
-          <button type="button" onClick={() => removeSubControl(subIdx)}>
+          {/* Operation Rule */}
+          <button
+            type="button"
+            onClick={() => addOperationRuleToColumn(subCtrl.header, subIdx)}
+          >
+            ➕ Formula Rule
+          </button>
+
+          {subCtrl.operationRule && (
+            <p style={{ color: "green" }}>
+              Formula: {subCtrl.label} = {subCtrl.operationRule.leftOperand}{" "}
+              {subCtrl.operationRule.operator}{" "}
+              {subCtrl.operationRule.rightOperand}
+            </p>
+          )}
+
+          <button
+            type="button"
+            onClick={() => removeSubControl(subIdx)}
+            style={{ color: "red", marginLeft: "10px" }}
+          >
             ❌
           </button>
         </div>
       ))}
+
+      {/* Operation Rule Editor */}
+      {selectedColumnIndex !== null && (
+        <div style={{ marginTop: "20px", padding: "10px", background: "#eef" }}>
+          <h5>Define Operation Rule: {selectedColumnname}</h5>
+          <select
+            value={operationRuleDraft.leftOperand}
+            onChange={(e) =>
+              setOperationRuleDraft({
+                ...operationRuleDraft,
+                leftOperand: e.target.value,
+              })
+            }
+          >
+            <option value="">Select Left Operand</option>
+            {numericColumns.map((label) => (
+              <option key={label} value={label}>
+                {label}
+              </option>
+            ))}
+          </select>
+
+          <select
+            value={operationRuleDraft.operator}
+            onChange={(e) =>
+              setOperationRuleDraft({
+                ...operationRuleDraft,
+                operator: e.target.value,
+              })
+            }
+          >
+            <option value="+">+</option>
+            <option value="-">-</option>
+            <option value="*">*</option>
+            <option value="/">/</option>
+          </select>
+
+          <select
+            value={operationRuleDraft.rightOperand}
+            onChange={(e) =>
+              setOperationRuleDraft({
+                ...operationRuleDraft,
+                rightOperand: e.target.value,
+              })
+            }
+          >
+            <option value="">Select Right Operand</option>
+            {numericColumns.map((label) => (
+              <option key={label} value={label}>
+                {label}
+              </option>
+            ))}
+          </select>
+
+          <br />
+          <button type="button" onClick={saveRuleToColumn}>
+            ✅ Save Rule
+          </button>
+          <button
+            type="button"
+            onClick={cancelRule}
+            style={{ marginLeft: "10px" }}
+          >
+            ❌ Cancel
+          </button>
+        </div>
+      )}
     </div>
   );
 };
