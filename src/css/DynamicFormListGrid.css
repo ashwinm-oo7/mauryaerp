@@ -83,3 +83,17 @@
   font-size: 14px;
   color: #111827;
 }
+
+
+/* GridWithSum */
+.classic-grid-footer {
+  display: flex;
+  font-weight: bold;
+  background: #f9f9f9;
+  border-top: 2px solid #ccc;
+}
+.classic-grid-cell.footer {
+  padding: 6px;
+  border-right: 1px solid #ddd;
+  text-align: right;
+}

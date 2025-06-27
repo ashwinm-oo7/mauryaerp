@@ -1,0 +1,46 @@
+.erp-spinner-wrapper {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #333;
+  font-weight: 500;
+}
+
+.erp-spinner {
+  width: 60px;
+  height: 60px;
+  border: 6px solid #e0e0e0;
+  border-top: 6px solid #4caf50;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  color: #4caf50;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+.backup-progress-bar-container {
+  width: 80%;
+  background-color: #e0e0e0;
+  border-radius: 10px;
+  margin-top: 10px;
+  overflow: hidden;
+}
+
+.backup-progress-bar {
+  height: 20px;
+  width: 0%;
+  background-color: #4caf50;
+  color: white;
+  text-align: center;
+  line-height: 20px;
+  transition: width 0.5s ease-in-out;
+}

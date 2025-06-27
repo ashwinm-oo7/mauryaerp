@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import "../css/DynamicFormList.css";
 import "../css/DynamicFormListGrid.css";
+import GridWithSum from "../reusable/GridWithSum";
 
 const PAGE_SIZE = 6;
 
@@ -16,7 +17,7 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
   const [sortField, setSortField] = useState("");
   const [filterField, setFilterField] = useState("");
   const [filterValue, setFilterValue] = useState("");
-  console.log(controls);
+  console.log("DynamicFormList", controls);
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
@@ -79,7 +80,7 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
   };
 
   // Render single card with navigation (your existing one)
-  const renderSingleCard = () => {
+  const renderSingleCardwait = () => {
     const row = filteredData[currentIndex];
     if (!row) return <p className="text-gray-500">No record available</p>;
 
@@ -111,7 +112,7 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
                   value.length > 0 ? (
                   <div className="classic-grid-wrapper">
                     <div className="classic-grid-table">
-                      <div className="classic-grid-header">
+                      {/* <div className="classic-grid-header">
                         {Object.keys(value[0]).map((colKey) => (
                           <div
                             className="classic-grid-cell header"
@@ -120,18 +121,148 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
                             {colKey}
                           </div>
                         ))}
+                      </div> */}
+                      <div className="classic-grid-header">
+                        {controls
+                          .find(
+                            (ctrl) =>
+                              ctrl.controlType === "grid" &&
+                              ctrl.label.toLowerCase() === label.toLowerCase()
+                          )
+                          ?.subControls?.map((sub) => (
+                            <div
+                              className="classic-grid-cell header"
+                              key={sub.label}
+                            >
+                              {sub.header || sub.label}
+                            </div>
+                          ))}
                       </div>
+
                       {value.map((rowData, rowIndex) => (
                         <div className="classic-grid-row" key={rowIndex}>
-                          {Object.entries(rowData).map(([col, val]) => (
+                          {/* {Object.entries(rowData).map(([col, val]) => (
                             <div className="classic-grid-cell" key={col}>
                               {val || "-"}
                             </div>
-                          ))}
+                          ))} */}
+                          {controls
+                            .find(
+                              (ctrl) =>
+                                ctrl.controlType === "grid" &&
+                                ctrl.label === label
+                            )
+                            ?.subControls?.map((sub) => (
+                              <div
+                                className="classic-grid-cell"
+                                key={sub.label}
+                              >
+                                {rowData[sub.label] || "-"}
+                              </div>
+                            ))}
                         </div>
                       ))}
                     </div>
                   </div>
+                ) : (
+                  <span className="classic-grid-default-value">
+                    {value || "-"}
+                  </span>
+                )}
+              </div>
+            );
+          })}
+
+          <div className="df-card-actions">
+            <button onClick={() => onEdit(row)} className="df-btn df-btn-edit">
+              ✏️ Edit
+            </button>
+            <button
+              onClick={() => handleDelete(row._id)}
+              className="df-btn df-btn-delete"
+            >
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+
+        <div className="df-card-nav">
+          <button
+            onClick={() => setCurrentIndex((prev) => Math.max(prev - 1, 0))}
+            disabled={currentIndex === 0}
+            className={`transition px-4 py-2 rounded border ${
+              currentIndex === 0
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-white text-gray-800 hover:bg-blue-100 hover:border-blue-500"
+            }`}
+          >
+            ◀️ Previous
+          </button>
+          <span>
+            <span className="text-gray-600 font-medium">
+              {currentIndex + 1} of {filteredData.length}
+            </span>
+          </span>
+          <button
+            onClick={() =>
+              setCurrentIndex((prev) =>
+                Math.min(prev + 1, filteredData.length - 1)
+              )
+            }
+            disabled={currentIndex === filteredData.length - 1}
+            className={`transition px-4 py-2 rounded border ${
+              currentIndex === filteredData.length - 1
+                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                : "bg-white text-gray-800 hover:bg-blue-100 hover:border-blue-500"
+            }`}
+          >
+            Next ▶️
+          </button>
+        </div>
+      </div>
+    );
+  };
+  const renderSingleCard = () => {
+    const row = filteredData[currentIndex];
+    if (!row) return <p className="text-gray-500">No record available</p>;
+
+    return (
+      <div className="df-card-view">
+        <div className="df-card">
+          {controls.map(({ controlType, label, options = [] }) => {
+            const value = row[label];
+
+            return (
+              <div
+                key={label}
+                className={
+                  controlType === "grid"
+                    ? "classic-grid-container"
+                    : "df-card-field"
+                }
+              >
+                <strong className="classic-grid-label">
+                  {controlType === "checkbox" ? label : label}
+                </strong>
+
+                {controlType === "checkbox" ? (
+                  <span className="classic-checkbox-value">
+                    {value ? "✅" : "❌"}
+                  </span>
+                ) : controlType === "grid" &&
+                  Array.isArray(value) &&
+                  value.length > 0 ? (
+                  <GridWithSum
+                    label={label}
+                    rows={value}
+                    subControls={
+                      controls.find(
+                        (ctrl) =>
+                          ctrl.controlType === "grid" &&
+                          ctrl.label.toLowerCase() === label.toLowerCase()
+                      )?.subControls || []
+                    }
+                  />
                 ) : (
                   <span className="classic-grid-default-value">
                     {value || "-"}

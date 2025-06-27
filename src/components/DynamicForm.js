@@ -76,32 +76,6 @@ const DynamicForm = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formData]);
 
-  // Fetch sabtable data for dropdowns
-  // useEffect(() => {
-  //   const fetchDropdownData = async () => {
-  //     for (const control of controls) {
-  //       if (control.controlType === "dropdown" && control.sabtable) {
-  //         setIsLoading(true);
-  //         try {
-  //           const res = await axios.get(
-  //             `${process.env.REACT_APP_API_URL}/api/mastertable/options/${control.sabtable}`
-  //           );
-  //           setDropdownOptions((prev) => ({
-  //             ...prev,
-  //             [control.label]: res.data.options,
-  //           }));
-  //         } catch (err) {
-  //           console.error("Error fetching dropdown options:", err);
-  //         } finally {
-  //           setIsLoading(false);
-  //         }
-  //       }
-  //     }
-  //   };
-
-  //   fetchDropdownData();
-  // }, [controls]);
-
   useEffect(() => {
     const fetchDropdownData = async () => {
       const allDropdowns = [];
@@ -154,13 +128,13 @@ const DynamicForm = ({
   const handleChange = (label, value) => {
     setFormData((prev) => ({ ...prev, [label]: value }));
   };
-  const handleGridChange = (gridLabel, rowIndex, field, value) => {
-    setGridData((prev) => {
-      const updatedRows = [...(prev[gridLabel] || [])];
-      updatedRows[rowIndex] = { ...updatedRows[rowIndex], [field]: value };
-      return { ...prev, [gridLabel]: updatedRows };
-    });
-  };
+  // const handleGridChange = (gridLabel, rowIndex, field, value) => {
+  //   setGridData((prev) => {
+  //     const updatedRows = [...(prev[gridLabel] || [])];
+  //     updatedRows[rowIndex] = { ...updatedRows[rowIndex], [field]: value };
+  //     return { ...prev, [gridLabel]: updatedRows };
+  //   });
+  // };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -235,8 +209,8 @@ const DynamicForm = ({
       setIsLoading(false);
     }
   };
-  const hasGrid = controls.some((control) => control.controlType === "grid");
-  const formClassName = hasGrid ? "" : "space-y-4";
+  // const hasGrid = controls.some((control) => control.controlType === "grid");
+  // const formClassName = hasGrid ? "" : "space-y-4";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -261,7 +235,8 @@ const DynamicForm = ({
                       : "block font-medium"
                   }
                 >
-                  {options}:({label})
+                  {/* {options}:({label}) */}
+                  {options}
                 </label>
                 {control.dataType === "date" ? (
                   <input

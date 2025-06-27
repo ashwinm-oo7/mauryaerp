@@ -148,7 +148,7 @@ const MenuRegistration = () => {
     );
 
     if (isDuplicate) {
-      alert("❌ Label must be unique. This value is already used.");
+      alert(`❌ Label must be unique. This value is already used. ${value}`);
     }
   };
 
@@ -474,6 +474,7 @@ const MenuRegistration = () => {
                     saberpmenu={saberpmenu}
                     updateControl={updateControl}
                     updateSubControl={updateSubControl}
+                    handleLabelBlur={handleLabelBlur}
                   />
                 )}
                 {/* Grid Part */}

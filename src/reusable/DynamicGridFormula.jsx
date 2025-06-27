@@ -66,6 +66,19 @@ const DynamicGridFormula = ({
 
   const columnCount = subControls.length + 1;
   const gridTemplate = `repeat(${columnCount}, minmax(182px, 1fr))`;
+  const rows = gridData[label] || [];
+  // ✅ Calculate totals for fields with sumRequired
+  const sumFields = subControls
+    .filter((sub) => sub.sumRequired)
+    .map((sub) => sub.label);
+
+  const totals = sumFields.reduce((acc, label) => {
+    acc[label] = rows.reduce(
+      (sum, row) => sum + (parseFloat(row[label]) || 0),
+      0
+    );
+    return acc;
+  }, {});
 
   return (
     <div className="dynamic-grid-wrapper">
@@ -171,7 +184,27 @@ const DynamicGridFormula = ({
             </button>
           </div>
         ))}
+        {sumFields.length > 0 && (
+          <div
+            className="dynamic-grid-row dynamic-grid-footer"
+            style={{ gridTemplateColumns: gridTemplate }}
+          >
+            {subControls.map((sub) => (
+              <div key={sub.label} className="grid-footer-cell">
+                {sumFields.includes(sub.label) ? (
+                  <strong>{totals[sub.label].toFixed(2)}</strong>
+                ) : (
+                  ""
+                )}
+              </div>
+            ))}
+            <div className="grid-footer-cell">
+              <strong>Total</strong>
+            </div>
+          </div>
+        )}
       </div>
+      {/* === TOTALS ROW === */}
 
       <button type="button" className="grid-add-btn" onClick={addRow}>
         ➕ Add Row

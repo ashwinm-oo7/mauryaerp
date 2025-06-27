@@ -202,17 +202,17 @@
 }
 
 /* Grid Container */
-.sub-grid-controls {
+/* .sub-grid-controls {
   border-left: 3px solid #cbd5e0;
   margin-top: 10px;
   padding-left: 15px;
   background-color: #f8f9fa;
   border-radius: 4px;
   padding: 10px;
-}
+} */
 
 /* Sub-Control Row inside a Grid */
-.sub-control-row {
+/* .sub-control-row {
   display: flex;
   gap: 10px;
   margin-bottom: 8px;
@@ -236,17 +236,17 @@
 
 .sub-control-row button:hover {
   background-color: #e60000;
-}
+} */
 
 /* Grid Section Header */
-.sub-grid-controls h4 {
+/* .sub-grid-controls h4 {
   font-size: 16px;
   margin-bottom: 10px;
   color: #333;
-}
+} */
 
 /* Button to add grid fields */
-.sub-grid-controls > button {
+/* .sub-grid-controls > button {
   margin-bottom: 10px;
   background-color: #007bff;
   color: white;
@@ -268,4 +268,4 @@
 
 .control-row:active {
   opacity: 0.6;
-}
+} */

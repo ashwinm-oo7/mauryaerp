@@ -1,0 +1,46 @@
+/* Grid Container - Horizontal Scroll */
+.sub-grid-controls {
+  border-left: 3px solid #cbd5e0;
+  margin-top: 10px;
+  padding-left: 15px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  padding: 10px;
+
+  overflow-x: auto; /* ✅ Enables horizontal scroll */
+  max-width: 100%;   /* ✅ Ensures container fits within screen */
+}
+
+/* Sub-Control Row inside a Grid - Full Width */
+.sub-control-row {
+  display: flex;
+  gap: 5px;
+  margin-bottom: 8px;
+  align-items: center;
+
+  min-width: 1400px;  /* ✅ Forces horizontal overflow when many inputs */
+  flex-wrap: nowrap;  /* Prevent items from wrapping */
+}
+.sub-grid-controls {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Classic Style Button for "Add Field to Grid" */
+.sub-grid-Add-Field-Grid {
+  margin-bottom: 10px;
+  background-color: #e0e0e0;
+  color: #000;
+  border: 2px outset #dcdcdc;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  border-radius: 2px;
+  box-shadow: inset 1px 1px 0 #fff, inset -1px -1px 0 #a0a0a0;
+}
+
+.sub-grid-Add-Field-Grid:hover {
+  background-color: #d3d3d3;
+  border: 2px inset #c0c0c0;
+}

@@ -1,12 +1,13 @@
 // GridComponent.jsx
 import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-
+import "../css/GridComponent.css";
 const GridComponent = ({
   ctrl,
   saberpmenu,
   updateControl,
   updateSubControl,
+  handleLabelBlur,
 }) => {
   const [draggedSubIndex, setDraggedSubIndex] = useState(null);
   const [selectedColumnIndex, setSelectedColumnIndex] = useState(null);
@@ -51,6 +52,7 @@ const GridComponent = ({
       autoGenerate: false,
       defaultDateOption: "",
       operationRule: null,
+      sumRequired: false,
     };
 
     const updatedSubControls = [...(ctrl.subControls || []), newSubControl];
@@ -97,8 +99,8 @@ const GridComponent = ({
     setOperationRuleDraft({ leftOperand: "", operator: "*", rightOperand: "" });
   };
 
-  const columnOptions =
-    ctrl.subControls?.map((c) => c.label).filter(Boolean) || [];
+  // const columnOptions =
+  //   ctrl.subControls?.map((c) => c.label).filter(Boolean) || [];
 
   const numericColumns =
     ctrl.subControls
@@ -110,7 +112,11 @@ const GridComponent = ({
   return (
     <div className="sub-grid-controls" style={{ marginLeft: "20px" }}>
       <h4>Sub Controls (Grid Fields)</h4>
-      <button type="button" onClick={addSubControl}>
+      <button
+        className="sub-grid-Add-Field-Grid"
+        type="button"
+        onClick={addSubControl}
+      >
         ➕ Add Field to Grid
       </button>
 
@@ -128,8 +134,8 @@ const GridComponent = ({
               draggedSubIndex === subIdx
                 ? "2px dashed #4a90e2"
                 : "1px solid #ddd",
-            padding: "10px",
-            marginBottom: "10px",
+            padding: "5px",
+            marginBottom: "5px",
             backgroundColor: "#f9f9f9",
             cursor: "move",
           }}
@@ -142,6 +148,7 @@ const GridComponent = ({
             onChange={(e) =>
               updateSubControl(ctrl.id, subIdx, "label", e.target.value)
             }
+            onBlur={(e) => handleLabelBlur(subIdx, e.target.value)}
           />
 
           {/* Header */}
@@ -292,6 +299,23 @@ const GridComponent = ({
             >
               <option value="">Select Date Option</option>
               <option value="currentDate">Current Date</option>
+            </select>
+          )}
+          {["int", "decimal", "bigint"].includes(subCtrl.dataType) && (
+            <select
+              value={subCtrl.sumRequired ? "yes" : "no"}
+              onChange={(e) =>
+                updateSubControl(
+                  ctrl.id,
+                  subIdx,
+                  "sumRequired",
+                  e.target.value === "yes"
+                )
+              }
+              style={{ marginLeft: "10px" }}
+            >
+              <option value="no">Sum Required: No</option>
+              <option value="yes">Sum Required: Yes</option>
             </select>
           )}
 
