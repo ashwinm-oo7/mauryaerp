@@ -4,7 +4,7 @@ import DynamicFormList from "./DynamicFormList";
 import "../css/DynamicFormContainer.css";
 
 const DynamicFormContainer = ({ formMeta }) => {
-  const [activeTab, setActiveTab] = useState("add");
+  const [activeTab, setActiveTab] = useState("list");
   const [editingData, setEditingData] = useState(null);
   const [refreshList, setRefreshList] = useState(false);
   const isDirty = useRef(false); // Track form dirtiness

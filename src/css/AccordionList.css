@@ -1,0 +1,91 @@
+.accordion-list {
+    max-width: 1200px;
+    margin: 10px auto;
+    padding: 10px 45px;
+}
+
+.no-records {
+  text-align: center;
+  color: #6b7280;
+  font-style: italic;
+  padding: 20px 0;
+  font-size: 16px;
+}
+
+.accordion-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  margin-top: 24px;
+  font-size: 14px;
+  color: #374151;
+  user-select: none;
+}
+
+.accordion-pagination button {
+  background-color: #2563eb;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.accordion-pagination button:disabled {
+  background-color: #9ca3af;
+  cursor: not-allowed;
+}
+
+.accordion-pagination button:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.accordion-pagination span {
+  min-width: 110px;
+  text-align: center;
+}
+/* AccordionList.css */
+
+.al-container {
+  padding: 1rem;
+  background-color: var(--bg-color);
+  transition: background 0.3s ease;
+}
+
+.al-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.al-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .al-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
+
+/* Light/Dark Mode Support */
+:root {
+  --bg-color: #f9fafb;
+  --card-bg: #ffffff;
+  --text-color: #1f2937;
+}
+
+[data-theme='dark'] {
+  --bg-color: #1f2937;
+  --card-bg: #111827;
+  --text-color: #f9fafb;
+}

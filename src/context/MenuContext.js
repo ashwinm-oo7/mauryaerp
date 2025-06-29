@@ -1,10 +1,15 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
+import axios from "../context/axiosConfig"; // update path if needed
+import { useAuth } from "./AuthContext";
+
 import { LoadingContext } from "./LoadingContext";
 
 export const MenuContext = createContext();
 
 export const MenuProvider = ({ children }) => {
+  const { auth, login, isAuthenticated } = useAuth(); // ✅ add isAuthenticated
+
   const [menus, setMenus] = useState([]);
   const [submenus, setSubmenus] = useState([]);
   const [nestedSubmenusMap, setNestedSubmenusMap] = useState({});
@@ -13,13 +18,22 @@ export const MenuProvider = ({ children }) => {
   const { setIsLoading } = useContext(LoadingContext);
 
   useEffect(() => {
+    if (!auth.token) return; // ✅ Don't fetch if not logged in
+
     const fetchMenus = async () => {
       setIsLoading(true);
 
       try {
-        const res = await axios.get(
-          `${process.env.REACT_APP_API_URL}/api/menus/getMenus`
-        );
+        // const res = await axios.get(
+        //   `${process.env.REACT_APP_API_URL}/api/menus/getMenus`,
+        //   {
+        //     headers: {
+        //       "Cache-Control": "no-cache",
+        //     },
+        //   }
+        // );
+        const res = await axios.get("/api/menus/getMenus");
+
         const data = res.data;
 
         // Store all valid entries for saberpmenu display
@@ -93,7 +107,7 @@ export const MenuProvider = ({ children }) => {
 
     fetchMenus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [auth.token]); // ✅ re-run when login happens
 
   return (
     <MenuContext.Provider

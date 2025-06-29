@@ -1,13 +1,17 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+// import axios from "axios";
+import axios from "../context/axiosConfig"; // update path if needed
+
 import "../css/DynamicFormList.css";
 import "../css/DynamicFormListGrid.css";
 import GridWithSum from "../reusable/GridWithSum";
+import AccordionList from "../reusableList/AccordionList";
 
 const PAGE_SIZE = 6;
 
 const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
   const { tablename, controls = [] } = formMeta;
+  const visibleControls = controls.filter((c) => c.visiblity !== false);
 
   const [data, setData] = useState([]);
   const [filteredData, setFilteredData] = useState([]);
@@ -17,7 +21,7 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
   const [sortField, setSortField] = useState("");
   const [filterField, setFilterField] = useState("");
   const [filterValue, setFilterValue] = useState("");
-  console.log("DynamicFormList", controls);
+  console.log("DynamicFormList", controls, visibleControls);
   // Fetch data
   useEffect(() => {
     const fetchData = async () => {
@@ -229,7 +233,7 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
     return (
       <div className="df-card-view">
         <div className="df-card">
-          {controls.map(({ controlType, label, options = [] }) => {
+          {visibleControls.map(({ controlType, label, options = [] }) => {
             const value = row[label];
 
             return (
@@ -242,13 +246,11 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
                 }
               >
                 <strong className="classic-grid-label">
-                  {controlType === "checkbox" ? label : label}
+                  {controlType === "checkbox" ? label : options}
                 </strong>
 
                 {controlType === "checkbox" ? (
-                  <span className="classic-checkbox-value">
-                    {value ? "✅" : "❌"}
-                  </span>
+                  <span className="checkbox-value">{value ? "✅" : "❌"}</span>
                 ) : controlType === "grid" &&
                   Array.isArray(value) &&
                   value.length > 0 ? (
@@ -256,11 +258,15 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
                     label={label}
                     rows={value}
                     subControls={
-                      controls.find(
-                        (ctrl) =>
-                          ctrl.controlType === "grid" &&
-                          ctrl.label.toLowerCase() === label.toLowerCase()
-                      )?.subControls || []
+                      visibleControls
+                        .find(
+                          (ctrl) =>
+                            ctrl.controlType === "grid" &&
+                            ctrl.label.toLowerCase() === label.toLowerCase()
+                        )
+                        ?.subControls?.filter(
+                          (sub) => sub.visiblity !== false
+                        ) || []
                     }
                   />
                 ) : (
@@ -323,90 +329,19 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
   };
 
   // Render grid cards for current page with pagination
-  const renderGridView = () => {
-    const startIdx = page * PAGE_SIZE;
-    const pageData = filteredData.slice(startIdx, startIdx + PAGE_SIZE);
+  const renderGridView = () => (
+    <AccordionList
+      data={filteredData}
+      controls={visibleControls}
+      onEdit={onEdit}
+      onDelete={handleDelete}
+      page={page}
+      setPage={setPage}
+      pageSize={PAGE_SIZE}
+    />
+  );
 
-    if (pageData.length === 0)
-      return <p className="text-gray-500">No records available</p>;
-
-    return (
-      <>
-        <div className="vs-cards">
-          {pageData.map((row) => (
-            <div key={row._id} className="vs-card">
-              <div className="vs-card-content">
-                {controls.map(({ controlType, label, options = [] }) => (
-                  <div key={label} className="vs-field">
-                    <div className="vs-label">
-                      {controlType === "checkbox" ? label : options}
-                    </div>
-                    <div className="vs-value">
-                      {controlType === "checkbox"
-                        ? row[label]
-                          ? "✅"
-                          : "❌"
-                        : typeof row[label] === "object"
-                        ? JSON.stringify(row[label])
-                        : row[label] || "-"}
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="vs-card-actions">
-                <button
-                  onClick={() => onEdit(row)}
-                  className="vs-btn vs-btn-edit"
-                >
-                  ✏️ Edit
-                </button>
-                <button
-                  onClick={() => handleDelete(row._id)}
-                  className="vs-btn vs-btn-delete"
-                >
-                  🗑️ Delete
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="df-card-nav" style={{ marginTop: 16 }}>
-          <button
-            onClick={() => setPage((p) => Math.max(p - 1, 0))}
-            disabled={page === 0}
-            className={`transition px-4 py-2 rounded border ${
-              page === 0
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-white text-gray-800 hover:bg-blue-100 hover:border-blue-500"
-            }`}
-          >
-            ◀️ Previous Page
-          </button>
-          <span
-            style={{ margin: "0 10px", fontWeight: "500", color: "#4b5563" }}
-          >
-            Page {page + 1} of {Math.ceil(filteredData.length / PAGE_SIZE)}
-          </span>
-          <button
-            onClick={() =>
-              setPage((p) =>
-                Math.min(p + 1, Math.ceil(filteredData.length / PAGE_SIZE) - 1)
-              )
-            }
-            disabled={page === Math.ceil(filteredData.length / PAGE_SIZE) - 1}
-            className={`transition px-4 py-2 rounded border ${
-              page === Math.ceil(filteredData.length / PAGE_SIZE) - 1
-                ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                : "bg-white text-gray-800 hover:bg-blue-100 hover:border-blue-500"
-            }`}
-          >
-            Next Page ▶️
-          </button>
-        </div>
-      </>
-    );
-  };
+  // table
   const renderTableView = () => (
     <div className="df-table-wrapper">
       <table className="df-table">
@@ -419,19 +354,18 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
                 {control?.label}
               </th>
             ))} */}
-            {controls.map(({ controlType, label, options = [] }) => (
+            {visibleControls.map(({ controlType, label, options = [] }) => (
               <th key={label} className="df-th">
                 {controlType === "checkbox" ? label : options}
               </th>
             ))}
-
             <th className="df-th">Actions</th>
           </tr>
         </thead>
         <tbody className="df-tbody">
           {filteredData.map((row, index) => (
             <tr key={row._id} className="df-tr">
-              <td className="df-td">{index + 1}</td> {/* Sr. No column */}
+              <td className="df-td">{index + 1}</td>
               {controls.map((control) => (
                 <td key={control.label} className="df-td">
                   {control.controlType === "checkbox"
@@ -491,7 +425,7 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
           className="border px-2 py-1 rounded"
         >
           <option value="">None</option>
-          {controls.map((c) => (
+          {visibleControls.map((c) => (
             <option key={c.label} value={c.label}>
               {c.label}
             </option>
@@ -509,7 +443,7 @@ const DynamicFormList = ({ formMeta, onEdit, refreshTrigger }) => {
           className="border px-2 py-1 rounded"
         >
           <option value="">None</option>
-          {controls
+          {visibleControls
             .filter((c) => c.controlType === "checkbox" || c.controlType)
             .map((c) => (
               <option key={c.label} value={c.label}>

@@ -1,0 +1,225 @@
+.accordion-card {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background-color: #fff;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 0.1);
+  transition: box-shadow 0.3s ease;
+}
+
+.accordion-card:hover {
+  box-shadow: 0 3px 8px rgb(0 0 0 / 0.15);
+  cursor: pointer;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 20px;
+  background-color: #f9fafb;
+  border-bottom: 1px solid #e5e7eb;
+  font-weight: 600;
+  font-size: 16px;
+  color: #111827;
+  user-select: none;
+  gap: 16px;
+  flex-wrap: nowrap;
+  overflow: hidden;
+}
+
+.accordion-header > div {
+  flex-shrink: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 200px;
+}
+
+.accordion-toggle {
+  font-size: 20px;
+  color: #6b7280;
+  user-select: none;
+  transition: transform 0.2s ease;
+  transform-origin: center;
+  flex-shrink: 0;
+  width: 24px;
+}
+
+.accordion-card.expanded .accordion-toggle {
+  transform: rotate(90deg);
+}
+
+.accordion-body {
+  padding: 16px 20px;
+  color: #374151;
+  font-size: 14px;
+  line-height: 1;
+  background-color: #fff;
+}
+
+.accordion-body > div:not(.grid-section):not(.accordion-actions) {
+  margin-bottom: 10px;
+}
+
+.accordion-body strong {
+  font-weight: 600;
+  margin-right: 6px;
+  color: #111827;
+}
+
+.grid-section {
+  margin-top: 20px;
+}
+
+.grid-section h4 {
+  margin-bottom: 8px;
+  font-weight: 700;
+  color: #2563eb;
+  font-size: 15px;
+}
+
+.grid-preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.grid-preview-table th,
+.grid-preview-table td {
+  border: 1px solid #d1d5db;
+  padding: 8px 12px;
+  text-align: left;
+  color: #4b5563;
+}
+
+.grid-preview-table th {
+  background-color: #f3f4f6;
+  font-weight: 600;
+}
+
+.accordion-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 12px;
+}
+
+.accordion-actions button {
+  background-color: #2563eb;
+  border: none;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 4px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.accordion-actions button:hover {
+  background-color: #1d4ed8;
+}
+
+.accordion-actions button:last-child {
+  background-color: #dc2626;
+}
+
+.accordion-actions button:last-child:hover {
+  background-color: #b91c1c;
+}
+/* AccordionCard.css */
+
+.ac-card {
+  background-color: var(--card-bg);
+  border: 1px solid #d1d5db;
+  border-radius: 8px;
+  padding: 1rem;
+  color: var(--text-color);
+  transition: background 0.3s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.ac-card h4 {
+  margin-bottom: 0.75rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.ac-field {
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.ac-field-label {
+  font-weight: 500;
+  color: var(--text-color);
+  flex: 1;
+}
+
+.ac-field-value {
+  color: var(--text-color);
+  flex: 1;
+  text-align: right;
+}
+
+.ac-card-actions {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
+.ac-card button {
+  font-size: 0.9rem;
+  padding: 0.4rem 0.8rem;
+  border-radius: 5px;
+  border: 1px solid #d1d5db;
+  background-color: transparent;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.ac-card button:hover {
+  background-color: #e5e7eb;
+}
+
+/* Dark Mode */
+[data-theme='dark'] .ac-card {
+  border-color: #374151;
+}
+
+[data-theme='dark'] .ac-card button:hover {
+  background-color: #374151;
+}
+.df-field {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed #e5e7eb;
+  gap: 1rem;
+}
+
+.df-label {
+  font-weight: 600;
+  color: #374151;
+  flex: 0 1;
+}
+
+.df-value {
+  flex: 2;
+  color: #111827;
+  text-align: right;
+  word-break: break-word;
+}
+
+/* Dark mode support */
+[data-theme="dark"] .df-label {
+  color: #d1d5db;
+}
+
+[data-theme="dark"] .df-value {
+  color: #f3f4f6;
+}

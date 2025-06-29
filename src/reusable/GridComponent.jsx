@@ -45,6 +45,7 @@ const GridComponent = ({
       decimals: "",
       length: "",
       required: false,
+      visiblity: true,
       readOnly: false,
       header: "",
       sabtable: "",
@@ -318,7 +319,22 @@ const GridComponent = ({
               <option value="yes">Sum Required: Yes</option>
             </select>
           )}
-
+          {/* visiblity */}
+          <select
+            value={subCtrl.visiblity ? "yes" : "no"}
+            onChange={(e) =>
+              updateSubControl(
+                ctrl.id,
+                subIdx,
+                "visiblity",
+                e.target.value === "yes"
+              )
+            }
+            style={{ marginLeft: "10px" }}
+          >
+            <option value="no">Visiblity: No</option>
+            <option value="yes">Visiblity: Yes</option>
+          </select>
           {/* Operation Rule */}
           <button
             type="button"

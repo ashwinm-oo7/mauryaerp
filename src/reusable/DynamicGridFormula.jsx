@@ -7,6 +7,11 @@ const DynamicGridFormula = ({
   setGridData,
   dropdownOptions,
 }) => {
+  console.log("subControls", subControls);
+  const visibleSubControls = subControls.filter(
+    (sub) => sub.visiblity !== false
+  );
+
   const updateGridValue = (rowIndex, field, value) => {
     setGridData((prev) => {
       const updatedRows = [...(prev[label] || [])];
@@ -64,11 +69,11 @@ const DynamicGridFormula = ({
     });
   };
 
-  const columnCount = subControls.length + 1;
+  const columnCount = visibleSubControls.length + 1;
   const gridTemplate = `repeat(${columnCount}, minmax(182px, 1fr))`;
   const rows = gridData[label] || [];
   // ✅ Calculate totals for fields with sumRequired
-  const sumFields = subControls
+  const sumFields = visibleSubControls
     .filter((sub) => sub.sumRequired)
     .map((sub) => sub.label);
 
@@ -88,7 +93,7 @@ const DynamicGridFormula = ({
           className="dynamic-grid-row dynamic-grid-header"
           style={{ gridTemplateColumns: gridTemplate }}
         >
-          {subControls.map((sub) => (
+          {visibleSubControls.map((sub) => (
             <div key={sub.label} className="grid-header-cell">
               <span className="grid-header-label">
                 {sub.header?.toUpperCase()}
@@ -99,7 +104,6 @@ const DynamicGridFormula = ({
             <span className="grid-header-label">ACTIONS</span>
           </div>
         </div>
-
         {/* === DATA ROWS === */}
         {(gridData[label] || []).map((row, rowIndex) => (
           <div
@@ -107,9 +111,10 @@ const DynamicGridFormula = ({
             className="dynamic-grid-row dynamic-grid-data"
             style={{ gridTemplateColumns: gridTemplate }}
           >
-            {subControls.map((sub) => {
+            {visibleSubControls.map((sub) => {
               const subLabel = sub.label;
               const value = row[subLabel] || "";
+              const readOnly = sub.readOnly;
 
               switch (sub.controlType) {
                 case "input":
@@ -122,7 +127,10 @@ const DynamicGridFormula = ({
                       type={isNumber ? "number" : "text"}
                       placeholder={subLabel}
                       value={value}
-                      className="grid-cell-input"
+                      className={`grid-cell-input ${
+                        readOnly ? "readonly-red" : ""
+                      }`}
+                      disabled={readOnly}
                       onChange={(e) =>
                         updateGridValue(rowIndex, subLabel, e.target.value)
                       }
@@ -137,7 +145,10 @@ const DynamicGridFormula = ({
                     <select
                       key={subLabel}
                       value={value}
-                      className="grid-cell-select"
+                      className={`grid-cell-select ${
+                        readOnly ? "readonly-red" : ""
+                      }`}
+                      disabled={readOnly}
                       onChange={(e) =>
                         updateGridValue(rowIndex, subLabel, e.target.value)
                       }
@@ -153,10 +164,16 @@ const DynamicGridFormula = ({
 
                 case "checkbox":
                   return (
-                    <label key={subLabel} className="grid-cell-checkbox">
+                    <label
+                      key={subLabel}
+                      className={`grid-cell-checkbox ${
+                        readOnly ? "readonly-red" : ""
+                      }`}
+                    >
                       <input
                         type="checkbox"
                         checked={!!value}
+                        disabled={readOnly}
                         onChange={(e) =>
                           updateGridValue(rowIndex, subLabel, e.target.checked)
                         }
@@ -183,13 +200,14 @@ const DynamicGridFormula = ({
               ❌ Remove
             </button>
           </div>
-        ))}
+        ))}{" "}
+        {/* FOOTER TOTALS */}
         {sumFields.length > 0 && (
           <div
             className="dynamic-grid-row dynamic-grid-footer"
             style={{ gridTemplateColumns: gridTemplate }}
           >
-            {subControls.map((sub) => (
+            {visibleSubControls.map((sub) => (
               <div key={sub.label} className="grid-footer-cell">
                 {sumFields.includes(sub.label) ? (
                   <strong>{totals[sub.label].toFixed(2)}</strong>

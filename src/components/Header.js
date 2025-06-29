@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useContext } from "react";
 import { Link } from "react-router-dom";
 import "../css/Header.css";
 import { MenuContext } from "../context/MenuContext";
+import { useAuth } from "../context/AuthContext";
 
 const Header = () => {
   const {
@@ -13,7 +14,9 @@ const Header = () => {
 
   const [openMenuId, setOpenMenuId] = useState(null);
   const [openSubmenuId, setOpenSubmenuId] = useState(null);
-
+  const { auth, logout, isAuthenticated, isAdmin } = useAuth();
+  console.log("isadmin", isAdmin);
+  const power = !!auth?.data?.isAdmin;
   const menuRefs = useRef({});
 
   useEffect(() => {
@@ -119,6 +122,17 @@ const Header = () => {
                   Menu RegistrationList
                 </Link>
               </li>
+              {power && (
+                <li className="header__dropdown-item">
+                  <Link
+                    to="/dedfvudegfsfauhiuiytredcfvghjgfqsrdscfsfvssrtd"
+                    className="header__dropdown-link"
+                    onClick={() => setOpenMenuId(null)}
+                  >
+                    AdminPanel
+                  </Link>
+                </li>
+              )}
               <li className="header__dropdown-item">
                 <Link
                   to="/backup"
@@ -128,66 +142,97 @@ const Header = () => {
                   Backup
                 </Link>
               </li>
+              {isAuthenticated && (
+                <li className="header__dropdown-item">
+                  <span
+                    onClick={() => {
+                      logout();
+                      setOpenMenuId(null);
+                    }}
+                    className="header__dropdown-link"
+                  >
+                    Logout
+                  </span>
+                </li>
+              )}
+              {!isAuthenticated && (
+                <li className="header__dropdown-item">
+                  <Link
+                    to="/register"
+                    className="header__dropdown-link"
+                    onClick={() => setOpenMenuId(null)}
+                  >
+                    Register
+                  </Link>
+                </li>
+              )}
             </ul>
           )}
         </li>
+        {isAuthenticated && (
+          <>
+            {/* Dynamic Menus */}
+            {menus.map((menu) => {
+              // Top-level submenus for this menu container
+              const topSubmenus = submenus.filter(
+                (s) => s.MenuName === menu.bname
+              );
 
-        {/* Dynamic Menus */}
-        {menus.map((menu) => {
-          // Top-level submenus for this menu container
-          const topSubmenus = submenus.filter((s) => s.MenuName === menu.bname);
+              // Direct forms under the menu (using our classification "menu")
+              const directForms = forms.filter(
+                (form) =>
+                  form.formParentType === "menu" &&
+                  form.formParentName === menu.bname
+              );
 
-          // Direct forms under the menu (using our classification "menu")
-          const directForms = forms.filter(
-            (form) =>
-              form.formParentType === "menu" &&
-              form.formParentName === menu.bname
-          );
+              return (
+                <li
+                  key={menu._id}
+                  ref={(el) => (menuRefs.current[menu._id] = el)}
+                  className="header__menu-item"
+                  onClick={() => handleMenuClick(menu._id)}
+                >
+                  {menu.bname}
+                  {openMenuId === menu._id && (
+                    <ul className="header__dropdown">
+                      {topSubmenus.map((submenu) => (
+                        <li
+                          key={submenu._id}
+                          className="header__dropdown-item has-nested"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleSubmenuClick(submenu._id);
+                          }}
+                        >
+                          {submenu.bname} <span className="arrow">»</span>
+                          {openSubmenuId === submenu._id &&
+                            renderNestedSubmenus(submenu.bname, menu.bname)}
+                        </li>
+                      ))}
 
-          return (
-            <li
-              key={menu._id}
-              ref={(el) => (menuRefs.current[menu._id] = el)}
-              className="header__menu-item"
-              onClick={() => handleMenuClick(menu._id)}
-            >
-              {menu.bname}
-              {openMenuId === menu._id && (
-                <ul className="header__dropdown">
-                  {topSubmenus.map((submenu) => (
-                    <li
-                      key={submenu._id}
-                      className="header__dropdown-item has-nested"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleSubmenuClick(submenu._id);
-                      }}
-                    >
-                      {submenu.bname} <span className="arrow">»</span>
-                      {openSubmenuId === submenu._id &&
-                        renderNestedSubmenus(submenu.bname, menu.bname)}
-                    </li>
-                  ))}
-
-                  {directForms.map((form) => (
-                    <li key={form._id} className="header__dropdown-item">
-                      <Link
-                        to={`/${form.bname.replace(/\s+/g, "-").toLowerCase()}`}
-                        className="header__dropdown-link"
-                        onClick={() => {
-                          setOpenMenuId(null);
-                          setOpenSubmenuId(null);
-                        }}
-                      >
-                        {form.bname}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </li>
-          );
-        })}
+                      {directForms.map((form) => (
+                        <li key={form._id} className="header__dropdown-item">
+                          <Link
+                            to={`/${form.bname
+                              .replace(/\s+/g, "-")
+                              .toLowerCase()}`}
+                            className="header__dropdown-link"
+                            onClick={() => {
+                              setOpenMenuId(null);
+                              setOpenSubmenuId(null);
+                            }}
+                          >
+                            {form.bname}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}{" "}
+          </>
+        )}
       </ul>
     </nav>
   );

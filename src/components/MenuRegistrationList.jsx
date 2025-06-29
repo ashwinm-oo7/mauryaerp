@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { MenuContext } from "../context/MenuContext";
-import axios from "axios";
+// import axios from "axios";
+import axios from "../context/axiosConfig"; // update path if needed
+
 import "../css/MenuRegistrationList.css";
 import { useNavigate } from "react-router-dom";
 import MenuFormViewer from "../menu/MenuFormViewer";
@@ -44,9 +46,11 @@ const MenuRegistrationList = () => {
   const fetchMenus = async () => {
     setLoading(true);
     try {
-      const res = await axios.get(
-        `${process.env.REACT_APP_API_URL}/api/menus/getMenus`
-      );
+      // const res = await axios.get(
+      //   `${process.env.REACT_APP_API_URL}/api/menus/getMenus`
+      // );
+      const res = await axios.get("/api/menus/getMenus");
+
       setMenus(res?.data?.reverse());
     } catch (err) {
       console.error("Failed to fetch menus", err);
@@ -140,7 +144,7 @@ const MenuRegistrationList = () => {
                 <th>Active</th>
                 <th>Controls</th>
                 <th>Actions</th>
-              </tr>{" "}
+              </tr>
               <tr className="search-menu-field">
                 <td></td>
                 <td>
@@ -221,7 +225,10 @@ const MenuRegistrationList = () => {
 
                     <td>
                       {menu.controls?.map((ctrl, i) => (
-                        <div key={ctrl.id} className="control-view-row">
+                        <div
+                          key={`${ctrl.controlType}-${ctrl.label}-${i}`}
+                          className="control-view-row"
+                        >
                           <strong>{ctrl.controlType}</strong>: {ctrl.label}{" "}
                           {ctrl.controlType === "dropdown" &&
                             `(Options: ${ctrl.options.join(", ")},\n 

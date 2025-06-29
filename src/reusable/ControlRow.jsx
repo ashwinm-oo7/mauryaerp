@@ -196,6 +196,16 @@ const ControlRow = ({
           placeholder="ReadOnly"
         />
       )}
+      <select
+        value={ctrl.visiblity ? "true" : "false"}
+        onChange={(e) =>
+          updateControl(ctrl.id, "visiblity", e.target.value === "true")
+        }
+        className="required-toggle"
+      >
+        <option value="false">visiblity: No</option>
+        <option value="true">visiblity: Yes</option>
+      </select>
 
       <button
         type="button"

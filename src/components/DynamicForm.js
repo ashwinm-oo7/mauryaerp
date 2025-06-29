@@ -1,8 +1,9 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useContext, useEffect, useRef, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import "../css/DynamicForm.css";
 import "../css/DynamicFormGrid.css";
+import axios from "../context/axiosConfig"; // update path if needed
 
 import { LoadingContext } from "../context/LoadingContext";
 import DynamicGridFormula from "../reusable/DynamicGridFormula";
@@ -15,6 +16,8 @@ const DynamicForm = ({
 }) => {
   const [formData, setFormData] = useState(initialData || {});
   const { controls = [], tablename } = formMeta;
+  const visibleControls = controls.filter((c) => c.visiblity !== false);
+
   // const [isLoading, setIsLoading] = useState(false);
   const { isLoading, setIsLoading } = useContext(LoadingContext);
 
@@ -144,7 +147,7 @@ const DynamicForm = ({
       return;
     }
     // ✅ Validate required fields
-    const missingFields = controls
+    const missingFields = visibleControls
       .filter((control) => control.required)
       .filter((control) => {
         const value = formData[control.label];
@@ -168,7 +171,7 @@ const DynamicForm = ({
       const payload = { ...formData };
 
       // add only sequence fields with entnoFormat
-      controls.forEach((control) => {
+      visibleControls.forEach((control) => {
         if (
           control.dataType === "sequence" &&
           control.entnoFormat &&
@@ -209,12 +212,12 @@ const DynamicForm = ({
       setIsLoading(false);
     }
   };
-  // const hasGrid = controls.some((control) => control.controlType === "grid");
+  // const hasGrid = visibleControls.some((control) => control.controlType === "grid");
   // const formClassName = hasGrid ? "" : "space-y-4";
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {controls.map((control) => {
+      {visibleControls.map((control) => {
         const { controlType, label, options = [] } = control;
 
         switch (controlType) {

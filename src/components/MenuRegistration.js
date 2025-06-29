@@ -4,7 +4,9 @@ import { MenuContext } from "../context/MenuContext";
 import { Link, useNavigate } from "react-router-dom";
 import { v4 as uuidv4 } from "uuid";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
+import axios from "../context/axiosConfig"; // update path if needed
+
 import { LoadingContext } from "../context/LoadingContext";
 
 import GridComponent from "../reusable/GridComponent";
@@ -56,10 +58,12 @@ const MenuRegistration = () => {
       const fetchData = async () => {
         setIsLoading(true);
         try {
-          const res = await axios.get(
-            `${process.env.REACT_APP_API_URL}/api/menus/getMenuById/${id}`
-          );
-          console.log("fetchData", res.data);
+          // const res = await axios.get(
+          //   `${process.env.REACT_APP_API_URL}/api/menus/getMenuById/${id}`
+          // );
+          const res = await axios.get(`/api/menus/getMenuById/${id}`);
+
+          console.log("fetchDatass", res.data);
           const normalizedControls = (res.data.controls || []).map((ctrl) => ({
             ...ctrl,
             id: ctrl._id || uuidv4(), // Assign internal id for rendering
@@ -117,6 +121,7 @@ const MenuRegistration = () => {
       options: ["dropdown", "input"].includes(type) ? [] : [],
       sabtable: "",
       required: false,
+      visiblity: true,
       readOnly: false,
       entnoFormat: "",
       autoGenerate: false,
@@ -245,6 +250,14 @@ const MenuRegistration = () => {
         return;
       }
     }
+    if (type === "menu") {
+      if (MenuName || ParentSubmenuName || tablename) {
+        alert(
+          "For 'menu' type, MenuName, ParentSubmenuName, and tablename must be empty."
+        );
+        return;
+      }
+    }
 
     if (type === "submenu") {
       if (!MenuName || ParentSubmenuName || tablename) {
@@ -270,7 +283,7 @@ const MenuRegistration = () => {
       }
     }
     formData.controls.forEach((ctrl) => {
-      if (ctrl.controlType === "grid") {
+      if (ctrl.controlType === "grid" && Array.isArray(ctrl.subControls)) {
         ctrl.subControls.forEach((sub) => {
           if (!sub.label?.trim()) {
             throw new Error("All grid sub-controls must have labels.");
@@ -281,22 +294,26 @@ const MenuRegistration = () => {
     console.log("FINAL SUBMIT PAYLOAD:", JSON.stringify(formData, null, 2));
 
     // Validation logic (same as before)
-    const method = id ? "PUT" : "POST";
-    const url = id
-      ? `${process.env.REACT_APP_API_URL}/api/menus/updateMenu/${id}`
-      : `${process.env.REACT_APP_API_URL}/api/menus`;
+    // const method = id ? "PUT" : "POST";
+    // const url = id
+    //   ? `${process.env.REACT_APP_API_URL}/api/menus/updateMenu/${id}`
+    //   : `${process.env.REACT_APP_API_URL}/api/menus`;
+    const url = id ? `/api/menus/updateMenu/${id}` : `/api/menus`;
 
     try {
-      const res = await fetch(url, {
-        method,
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      // const res = await fetch(url, {
+      //   method,
+      //   headers: { "Content-Type": "application/json" },
+      //   body: JSON.stringify(formData),
+      // });
+      const res = id
+        ? await axios.put(url, formData)
+        : await axios.post(url, formData);
 
-      const data = await res.json(); // Parse the response
+      // const data = await res.json();
+      const data = res.data;
 
-      if (!res.ok) {
-        // Handle errors from backend
+      if (![200, 201].includes(res.status)) {
         const msg = data.message || "Something went wrong!";
         alert(`❌ ${msg}`);
         return;
@@ -317,10 +334,15 @@ const MenuRegistration = () => {
       }
     } catch (err) {
       console.error("Save error:", err);
-      alert("Error saving menu.");
+      if (err.response?.status === 409) {
+        alert(`❌ ${err.response.data.message}`);
+      } else if (err.response?.data?.message) {
+        alert(`❌ ${err.response.data.message}`);
+      } else {
+        alert("❌ Error saving menu. Please try again.");
+      }
     }
   };
-
   return (
     <div className="menu-registration-container">
       <h2>{id ? "Edit Menu" : "New Menu Registration"}</h2>

@@ -5,15 +5,18 @@ import App from "./App";
 import { MenuProvider } from "./context/MenuContext";
 import { LoadingProvider } from "./context/LoadingContext";
 import GlobalLoader from "./context/GlobalLoader";
+import { AuthProvider } from "./context/AuthContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <BrowserRouter>
-    <LoadingProvider>
-      <MenuProvider>
-        <GlobalLoader />
-        <App />
-      </MenuProvider>
-    </LoadingProvider>
+    <AuthProvider>
+      <LoadingProvider>
+        <MenuProvider>
+          <GlobalLoader />
+          <App />
+        </MenuProvider>
+      </LoadingProvider>
+    </AuthProvider>
   </BrowserRouter>
 );
