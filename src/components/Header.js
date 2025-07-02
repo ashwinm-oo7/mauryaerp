@@ -14,9 +14,10 @@ const Header = () => {
 
   const [openMenuId, setOpenMenuId] = useState(null);
   const [openSubmenuId, setOpenSubmenuId] = useState(null);
-  const { auth, logout, isAuthenticated, isAdmin } = useAuth();
-  console.log("isadmin", isAdmin);
-  const power = !!auth?.data?.isAdmin;
+  const { auth, logout, isAuthenticated, isAdmin, userAccess, power } =
+    useAuth();
+  console.log("isadmin", isAdmin, "userAccess :", userAccess);
+
   const menuRefs = useRef({});
 
   useEffect(() => {
@@ -104,24 +105,28 @@ const Header = () => {
           File
           {openMenuId === "file" && (
             <ul className="header__dropdown">
-              <li className="header__dropdown-item">
-                <Link
-                  to="/menuregistration"
-                  className="header__dropdown-link"
-                  onClick={() => setOpenMenuId(null)}
-                >
-                  Menu Registration
-                </Link>
-              </li>
-              <li className="header__dropdown-item">
-                <Link
-                  to="/menuregistrationList"
-                  className="header__dropdown-link"
-                  onClick={() => setOpenMenuId(null)}
-                >
-                  Menu RegistrationList
-                </Link>
-              </li>
+              {["Developer", "Admin"].includes(userAccess) && (
+                <li className="header__dropdown-item">
+                  <Link
+                    to="/menuregistration"
+                    className="header__dropdown-link"
+                    onClick={() => setOpenMenuId(null)}
+                  >
+                    Menu Registration
+                  </Link>
+                </li>
+              )}
+              {["Developer", "Admin"].includes(userAccess) && (
+                <li className="header__dropdown-item">
+                  <Link
+                    to="/menuregistrationList"
+                    className="header__dropdown-link"
+                    onClick={() => setOpenMenuId(null)}
+                  >
+                    Menu RegistrationList
+                  </Link>
+                </li>
+              )}
               {power && (
                 <li className="header__dropdown-item">
                   <Link
@@ -133,15 +138,29 @@ const Header = () => {
                   </Link>
                 </li>
               )}
-              <li className="header__dropdown-item">
-                <Link
-                  to="/backup"
-                  className="header__dropdown-link"
-                  onClick={() => setOpenMenuId(null)}
-                >
-                  Backup
-                </Link>
-              </li>
+              {power && (
+                <li className="header__dropdown-item">
+                  <Link
+                    to="/auditlogs"
+                    className="header__dropdown-link"
+                    onClick={() => setOpenMenuId(null)}
+                  >
+                    View Audit Logs
+                  </Link>
+                </li>
+              )}
+
+              {power && (
+                <li className="header__dropdown-item">
+                  <Link
+                    to="/backup"
+                    className="header__dropdown-link"
+                    onClick={() => setOpenMenuId(null)}
+                  >
+                    Backup
+                  </Link>
+                </li>
+              )}
               {isAuthenticated && (
                 <li className="header__dropdown-item">
                   <span

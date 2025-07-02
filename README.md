@@ -85,6 +85,18 @@ Here’s what an entry in formData.controls could look like for the line item gr
   ]
 }
 ```
+## ✅ Defense-in-Depth (Layer-by-Layer Security)
+### Your architecture follows the principle of least privilege + multi-layer security:
+
+| Layer                          | Implemented                             | Description                                   |
+| ------------------------------ | --------------------------------------- | --------------------------------------------- |
+| **Frontend visibility gating** | ✅ `power`, `userAccess`, route wrappers | Prevents normal users from seeing admin tools |
+| **Frontend route enforcement** | ✅ `PrivateRoute`, `AdminRoute`          | Logical access blocking via routing           |
+| **Token-based authentication** | ✅ `verifyToken`                         | Stateless and secure                          |
+| **Role-based authorization**   | ✅ `isAdmin` middleware                  | Proper privilege checks                       |
+| **JWT validation**             | ✅ Server-side, uses secret key          | Cannot be forged                              |
+| **Token decoding in React**    | ✅ `jwtDecode` for UI usage only         | Not used for security decisions               |
+
 
 ### `npm start`
 

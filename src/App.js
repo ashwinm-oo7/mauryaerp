@@ -12,6 +12,8 @@ import AdminPanel from "./admin/AdminPanel";
 import Login from "./authentication/Login";
 import PrivateRoute from "./context/PrivateRoute";
 import HomePage from "./components/HomePage";
+import AdminRoute from "./context/AdminRoute";
+import AuditLogViewer from "./admin/AuditLogViewer";
 
 function App() {
   useEffect(() => {
@@ -62,9 +64,9 @@ function App() {
         <Route
           path="/backup"
           element={
-            <PrivateRoute>
+            <AdminRoute>
               <Backup />
-            </PrivateRoute>
+            </AdminRoute>
           }
         />
         <Route
@@ -78,9 +80,17 @@ function App() {
         <Route
           path="/dedfvudegfsfauhiuiytredcfvghjgfqsrdscfsfvssrtd"
           element={
-            <PrivateRoute>
+            <AdminRoute>
               <AdminPanel />
-            </PrivateRoute>
+            </AdminRoute>
+          }
+        />
+        <Route
+          path="/auditlogs"
+          element={
+            <AdminRoute>
+              <AuditLogViewer />
+            </AdminRoute>
           }
         />
       </Routes>

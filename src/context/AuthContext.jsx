@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { jwtDecode } from "jwt-decode"; // ✅ CORRECT
+import api from "../utils/axiosInstance";
 
 const AuthContext = createContext();
 
@@ -12,6 +13,10 @@ export const AuthProvider = ({ children }) => {
         localStorage.getItem("activeDb") || companies[0]?.db || null;
       let decoded = {};
       if (token) decoded = jwtDecode(token);
+      if (decoded.exp * 1000 < Date.now()) {
+        // token expired
+        logout();
+      }
 
       return { token, companies, activeDb, data: decoded };
     } catch (error) {
@@ -31,6 +36,7 @@ export const AuthProvider = ({ children }) => {
     localStorage.setItem("activeDb", activeDb);
 
     setAuth({ token, companies, activeDb, data });
+    api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
   };
 
   const setActiveDb = (db) => {
@@ -41,6 +47,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.clear();
     setAuth({ token: null, companies: [], activeDb: null });
+    api.defaults.headers.common["Authorization"] = null;
   };
 
   // Optional: keep localStorage in sync if auth state is updated elsewhere
@@ -62,6 +69,8 @@ export const AuthProvider = ({ children }) => {
         setActiveDb,
         isAuthenticated: !!auth.token,
         isAdmin: !!auth.data?.isAdmin,
+        userAccess: auth.data?.userAccess, // ✅ Add this line
+        power: !!auth.data?.isAdmin, // ← add this
       }}
     >
       {children}

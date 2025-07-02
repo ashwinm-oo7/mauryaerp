@@ -1,3 +1,4 @@
+/* userdetail.css */
 .user-detail-card {
   background: #ffffff;
   border-radius: 12px;
@@ -42,8 +43,6 @@
   border: 1px solid #ccc;
 }
 
-.add-btn,
-.save-btn,
 .remove-btn {
   margin-top: 10px;
   padding: 8px 14px;
@@ -53,10 +52,24 @@
   color: white;
   cursor: pointer;
 }
+.user-detail-card__btn {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: background 0.3s ease;
+}
 
-.add-btn {
+.user-detail-card__btn--add {
   background-color: #4caf50;
   margin-right: 10px;
+}
+
+.user-detail-card__btn--save {
+  background-color: #007acc;
 }
 
 .remove-btn {

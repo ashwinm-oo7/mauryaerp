@@ -1,9 +1,3 @@
-// Enhanced Admin Panel Plan:
-// ✅ Role-based backend guard
-// ✅ Pagination for user list
-// ✅ Company autocomplete using datalist
-// ✅ Export CSV/PDF
-
 // --- Updated AdminPanel.jsx ---
 import React, { useContext, useEffect, useState } from "react";
 // import axios from "axios";
@@ -61,14 +55,19 @@ const AdminPanel = () => {
 
   useEffect(() => {
     fetchUsers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page]);
 
   return (
     <div className="admin-panel">
       <div className="sidebar">
-        <h2>Verified Users</h2>
-        <button onClick={exportCSV}>Export CSV</button>
-        <button onClick={exportPDF}>Export PDF</button>
+        <h2 className="admin-sidebar__title">Verified Users</h2>
+        <button className="admin-sidebar__button" onClick={exportCSV}>
+          Export CSV
+        </button>
+        <button className="admin-sidebar__button" onClick={exportPDF}>
+          Export PDF
+        </button>
         {users?.map((user) => (
           <div
             key={user._id}
@@ -77,18 +76,24 @@ const AdminPanel = () => {
               selectedUser?._id === user._id ? "active" : ""
             }`}
           >
-            <strong>{user.email}</strong>
-            <p>{user.role}</p>
+            <div className="user-item__email">{user.email}</div>
+            <div className="user-item__role">{user.role}</div>
           </div>
         ))}
-        <div className="pagination">
-          <button onClick={() => setPage((p) => Math.max(p - 1, 1))}>
+        <div className="admin-pagination">
+          <button
+            className="admin-pagination__button"
+            onClick={() => setPage((p) => Math.max(p - 1, 1))}
+          >
             Prev
           </button>
           <span>
             {page} / {totalPages}
           </span>
-          <button onClick={() => setPage((p) => Math.min(p + 1, totalPages))}>
+          <button
+            className="admin-pagination__button"
+            onClick={() => setPage((p) => Math.min(p + 1, totalPages))}
+          >
             Next
           </button>
         </div>

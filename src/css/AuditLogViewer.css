@@ -1,0 +1,56 @@
+.auditlog-container {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background: var(--background, #fff);
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.auditlog-container h2 {
+  margin-bottom: 1rem;
+  font-size: 1.8rem;
+  color: var(--text-color, #333);
+}
+
+.auditlog-search {
+  width: 100%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.auditlog-table-wrapper {
+  overflow-x: auto;
+}
+
+.auditlog-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.auditlog-table th,
+.auditlog-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+.auditlog-table th {
+  background-color: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+}
+
+.auditlog-table pre {
+  white-space: pre-wrap;
+  word-break: break-word;
+  background-color: #f9f9f9;
+  padding: 5px;
+  border-radius: 4px;
+  max-height: 150px;
+  overflow: auto;
+}

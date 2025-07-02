@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import axios from "axios";
+// import axios from "axios";
+import axios from "../context/axiosConfig"; // update path if needed
+
 import "../css/Backup.css";
 
 const Backup = () => {
@@ -32,10 +34,12 @@ const Backup = () => {
     simulateProgress(); // Start fake progress
 
     try {
-      const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/api/backup`,
-        { path }
-      );
+      // const response = await axios.post(
+      //   `${process.env.REACT_APP_API_URL}/api/backup`,
+      //   { path }
+      // );
+      const response = await axios.post(`/api/backup/backup`, { path });
+
       setStatus(`✅ ${response.data.message}`);
       fetchBackupList(); // refresh list
     } catch (error) {
