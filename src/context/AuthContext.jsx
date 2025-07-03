@@ -44,10 +44,19 @@ export const AuthProvider = ({ children }) => {
     setAuth((prev) => ({ ...prev, activeDb: db }));
   };
 
-  const logout = () => {
-    localStorage.clear();
-    setAuth({ token: null, companies: [], activeDb: null });
-    api.defaults.headers.common["Authorization"] = null;
+  const logout = async () => {
+    try {
+      await api.post("/auth/logout"); // 🔥 Backend logout with audit log
+    } catch (err) {
+      console.warn(
+        "Server logout failed (maybe already expired):",
+        err.message
+      );
+    } finally {
+      localStorage.clear();
+      setAuth({ token: null, companies: [], activeDb: null });
+      delete api.defaults.headers.common["Authorization"];
+    }
   };
 
   // Optional: keep localStorage in sync if auth state is updated elsewhere
@@ -58,6 +67,7 @@ export const AuthProvider = ({ children }) => {
 
     window.addEventListener("storage", handleStorageChange);
     return () => window.removeEventListener("storage", handleStorageChange);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (

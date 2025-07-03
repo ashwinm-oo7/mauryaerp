@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "../context/axiosConfig";
 import "../css/UserDetail.css";
-const roles = ["pending", "approved", "admin", "rejected"];
+const roles = ["pending", "approved", "rejected"];
 const accessOptions = ["Developer", "Admin", "User"]; // New dropdown options
 
 const UserDetail = ({ user, refreshUsers }) => {

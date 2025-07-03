@@ -1,0 +1,95 @@
+.log-table-wrapper {
+  background: #ffffff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  font-family: "Segoe UI", sans-serif;
+}
+
+.log-table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.log-table-header h3 {
+  font-weight: 600;
+  color: #333;
+}
+
+.export-buttons button {
+  margin-left: 10px;
+  padding: 8px 12px;
+  background-color: #007bff;
+  border: none;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.export-buttons button:hover {
+  background-color: #0056b3;
+}
+
+.table-scroll-container {
+  overflow-x: auto;
+}
+
+.log-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 800px;
+}
+
+.log-table th,
+.log-table td {
+  padding: 12px;
+  border: 1px solid #eee;
+  text-align: left;
+  vertical-align: top;
+}
+
+.log-table th {
+  background-color: #f9f9f9;
+  color: #333;
+  font-weight: bold;
+}
+
+.log-cell pre {
+  background: #f5f5f5;
+  border-radius: 6px;
+  padding: 8px;
+  font-size: 0.75rem;
+  max-width: 300px;
+  overflow-x: auto;
+}
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.pagination button {
+  padding: 6px 12px;
+  margin: 0 10px;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.pagination button[disabled] {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.pagination span {
+  font-weight: 500;
+  color: #555;
+}

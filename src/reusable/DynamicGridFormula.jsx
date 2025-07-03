@@ -199,6 +199,9 @@ const DynamicGridFormula = ({
             >
               ❌ Remove
             </button>
+            <button type="button" className="grid-add-btn" onClick={addRow}>
+              ➕ Add Row
+            </button>
           </div>
         ))}{" "}
         {/* FOOTER TOTALS */}
