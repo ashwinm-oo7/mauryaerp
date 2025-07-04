@@ -93,3 +93,51 @@
 .has-nested:hover > .header__nested-dropdown {
   display: block;
 }
+
+/* -------- MOBILE ENHANCEMENTS ---------- */
+@media (max-width: 768px) {
+  .header__menu-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: thin; /* Firefox */
+  }
+
+  .header__menu-item {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 0 10px;
+  }
+
+  .header__dropdown {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .header__nested-dropdown {
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .header {
+    overflow-x: auto;
+  }
+
+  .header__menu-bar::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .header__menu-bar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.4);
+    border-radius: 4px;
+  }
+
+  .arrow {
+    margin-left: 4px;
+  }
+  .header__menu-bar {
+  -webkit-overflow-scrolling: touch;
+}
+
+}

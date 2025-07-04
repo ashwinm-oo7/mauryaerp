@@ -6,6 +6,7 @@ const DynamicGridFormula = ({
   gridData,
   setGridData,
   dropdownOptions,
+  onAddRowAndSave,
 }) => {
   console.log("subControls", subControls);
   const visibleSubControls = subControls.filter(
@@ -54,7 +55,16 @@ const DynamicGridFormula = ({
     });
   };
 
-  const addRow = () => {
+  const addRow = async () => {
+    if (typeof onAddRowAndSave === "function") {
+      try {
+        await onAddRowAndSave(); // 🔁 await the save
+      } catch (err) {
+        console.error("Save before add failed", err);
+      }
+    }
+  };
+  const addRowwait = () => {
     setGridData((prev) => ({
       ...prev,
       [label]: [...(prev[label] || []), {}],

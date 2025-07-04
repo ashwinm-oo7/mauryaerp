@@ -14,7 +14,7 @@ api.interceptors.request.use(async (config) => {
     if (decoded.exp * 1000 < Date.now()) {
       try {
         const res = await axios.post(
-          `${process.env.REACT_APP_API_URL}/auth/refresh`,
+          `${process.env.REACT_APP_API_URL}/auth/refresh-token`,
           {},
           { withCredentials: true }
         );

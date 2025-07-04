@@ -18,7 +18,6 @@ const DynamicForm = ({
   const { controls = [], tablename } = formMeta;
   const visibleControls = controls.filter((c) => c.visiblity !== false);
 
-  // const [isLoading, setIsLoading] = useState(false);
   const { isLoading, setIsLoading } = useContext(LoadingContext);
 
   const [msg, setMsg] = useState("");
@@ -27,13 +26,94 @@ const DynamicForm = ({
   const originalData = useRef(initialData || {});
   const [gridData, setGridData] = useState({});
 
-  // ADD THIS useEffect to listen for changes in initialData
-  // useEffect(() => {
-  //   setMsg("");
-  //   setError("");
-  //   setFormData(initialData || {});
-  //   originalData.current = initialData || {};
-  // }, [initialData]);
+  const handleAddRowAndSave = async (label) => {
+    console.log("👉 Starting save before adding row");
+    try {
+      await handleSubmitWrapper(true);
+      console.log("✅ Save done, now adding row");
+      setGridData((prev) => ({
+        ...prev,
+        [label]: [...(prev[label] || []), {}],
+      }));
+    } catch (e) {
+      console.error("❌ Save failed", e);
+    }
+  };
+
+  const handleSubmitWrapper = (stayOnForm = false) => {
+    return new Promise(async (resolve, reject) => {
+      if (!tablename) {
+        alert("No table name specified for this form.");
+        reject();
+        return;
+      }
+
+      const missingFields = visibleControls
+        .filter((control) => control.required)
+        .filter((control) => {
+          const value = formData[control.label];
+          return value === undefined || value === null || value === "";
+        });
+
+      if (missingFields.length > 0) {
+        const fieldNames = missingFields.map((f) => f.label).join(", ");
+        setError(`Please fill all required fields: ${fieldNames}`);
+        reject();
+        return;
+      }
+
+      try {
+        setIsLoading(true);
+        setMsg("");
+        setError("");
+
+        const payload = { ...formData };
+
+        visibleControls.forEach((control) => {
+          if (
+            control.dataType === "sequence" &&
+            control.entnoFormat &&
+            !formData[control.label]
+          ) {
+            payload["entnoFormat"] = control.entnoFormat;
+          }
+        });
+
+        Object.entries(gridData).forEach(([gridLabel, rows]) => {
+          payload[gridLabel] = rows;
+        });
+
+        let response;
+        if (initialData?._id) {
+          response = await axios.put(
+            `${process.env.REACT_APP_API_URL}/api/mastertable/update/${tablename}/${initialData._id}`,
+            payload
+          );
+        } else {
+          response = await axios.post(
+            `${process.env.REACT_APP_API_URL}/api/mastertable/save/${tablename}`,
+            payload
+          );
+        }
+        console.log("response", response);
+
+        setMsg("✅ Saved successfully!");
+        if (onSubmitDone) {
+          onSubmitDone(stayOnForm); // true = stay on form
+        }
+        resolve();
+      } catch (err) {
+        const errorMsg =
+          err.response?.data?.error ||
+          "❌ Error saving data. Please try again.";
+        setError(errorMsg);
+        setMsg("❌ Error saving data.");
+        reject(err);
+      } finally {
+        setIsLoading(false);
+      }
+    });
+  };
 
   useEffect(() => {
     setMsg("");
@@ -127,6 +207,45 @@ const DynamicForm = ({
 
     fetchDropdownData();
   }, [controls]);
+  const updateUpValue = (rowIndex, field, value) => {
+    setFormData((prev) => {
+      const updatedForm = { ...prev, [field]: value };
+
+      // Apply operationRule(s)
+      controls.forEach((control) => {
+        const rule = control.operationRule;
+        if (
+          rule &&
+          (rule.leftOperand === field || rule.rightOperand === field)
+        ) {
+          const left = parseFloat(updatedForm[rule.leftOperand]) || 0;
+          const right = parseFloat(updatedForm[rule.rightOperand]) || 0;
+
+          let result = "";
+          switch (rule.operator) {
+            case "+":
+              result = left + right;
+              break;
+            case "-":
+              result = left - right;
+              break;
+            case "*":
+              result = left * right;
+              break;
+            case "/":
+              result = right !== 0 ? left / right : 0;
+              break;
+            default:
+              break;
+          }
+
+          updatedForm[control.label] = result;
+        }
+      });
+
+      return updatedForm;
+    });
+  };
 
   const handleChange = (label, value) => {
     setFormData((prev) => ({ ...prev, [label]: value }));
@@ -139,8 +258,8 @@ const DynamicForm = ({
   //   });
   // };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (e, stayOnForm = false) => {
+    if (e) e.preventDefault();
 
     if (!tablename) {
       alert("No table name specified for this form.");
@@ -200,7 +319,9 @@ const DynamicForm = ({
       console.log("response", response);
       setMsg("✅ Saved successfully!");
       setFormData({});
-      if (onSubmitDone) onSubmitDone();
+      if (onSubmitDone) {
+        onSubmitDone(stayOnForm); // false = go back to list
+      }
     } catch (err) {
       const errorMsg =
         err.response?.data?.error || "❌ Error saving data. Please try again.";
@@ -216,8 +337,8 @@ const DynamicForm = ({
   // const formClassName = hasGrid ? "" : "space-y-4";
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      {visibleControls.map((control) => {
+    <form onSubmit={handleSubmitWrapper} className="space-y-4">
+      {visibleControls.map((control, index) => {
         const { controlType, label, options = [] } = control;
 
         switch (controlType) {
@@ -283,6 +404,7 @@ const DynamicForm = ({
                             handleChange(label, value);
                           }
                         }
+                        updateUpValue(index, label, e.target.value);
                       } else {
                         handleChange(label, value);
                       }
@@ -336,6 +458,7 @@ const DynamicForm = ({
                 gridData={gridData}
                 setGridData={setGridData}
                 dropdownOptions={dropdownOptions}
+                onAddRowAndSave={() => handleAddRowAndSave(label)} // ✅ now passes label
               />
             );
 

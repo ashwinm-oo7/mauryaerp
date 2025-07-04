@@ -30,3 +30,40 @@ export const exportToPDF = (data, columns, filename) => {
   doc.autoTable(tableColumn, tableRows);
   doc.save(`${filename}.pdf`);
 };
+
+export const applyOperationRules = (data, controls) => {
+  const updatedData = { ...data };
+
+  controls?.forEach((control) => {
+    const rule = control.operationRule;
+    if (
+      rule &&
+      updatedData.hasOwnProperty(rule.leftOperand) &&
+      updatedData.hasOwnProperty(rule.rightOperand)
+    ) {
+      const left = parseFloat(updatedData[rule.leftOperand]);
+      const right = parseFloat(updatedData[rule.rightOperand]);
+
+      if (!isNaN(left) && !isNaN(right)) {
+        let result = "";
+        switch (rule.operator) {
+          case "+":
+            result = left + right;
+            break;
+          case "-":
+            result = left - right;
+            break;
+          case "*":
+            result = left * right;
+            break;
+          case "/":
+            result = right !== 0 ? left / right : 0;
+            break;
+        }
+        updatedData[control.label] = result;
+      }
+    }
+  });
+
+  return updatedData;
+};

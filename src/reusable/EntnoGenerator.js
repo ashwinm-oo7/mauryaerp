@@ -38,6 +38,7 @@ const EntnoGenerator = ({
     const generated = formatEntno(template, lastNumber, user);
     setPreview(generated);
     onChange?.(generated, template);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [template, lastNumber, user]);
 
   return (

@@ -53,6 +53,7 @@ const GridComponent = ({
       autoGenerate: false,
       defaultDateOption: "",
       operationRule: null,
+      formula: "",
       sumRequired: false,
     };
 
@@ -106,20 +107,14 @@ const GridComponent = ({
   const numericColumns =
     ctrl.subControls
       ?.filter(
-        (c) => ["int", "decimal"].includes(c.dataType) && c.label?.trim()
+        (c) =>
+          ["int", "bigint", "decimal"].includes(c.dataType) && c.label?.trim()
       )
       .map((c) => c.label) || [];
 
   return (
     <div className="sub-grid-controls" style={{ marginLeft: "20px" }}>
       <h4>Sub Controls (Grid Fields)</h4>
-      <button
-        className="sub-grid-Add-Field-Grid"
-        type="button"
-        onClick={addSubControl}
-      >
-        ➕ Add Field to Grid
-      </button>
 
       {(ctrl.subControls || []).map((subCtrl, subIdx) => (
         <div
@@ -335,20 +330,41 @@ const GridComponent = ({
             <option value="no">Visiblity: No</option>
             <option value="yes">Visiblity: Yes</option>
           </select>
-          {/* Operation Rule */}
-          <button
-            type="button"
-            onClick={() => addOperationRuleToColumn(subCtrl.header, subIdx)}
-          >
-            ➕ Formula Rule
-          </button>
+          {["int", "decimal", "bigint"].includes(subCtrl.dataType) &&
+            subCtrl.controlType === "input" && (
+              <input
+                type="text"
+                placeholder="Formula (e.g., qty * rate)"
+                value={subCtrl.formula || ""}
+                onChange={(e) =>
+                  updateSubControl(ctrl.id, subIdx, "formula", e.target.value)
+                }
+                style={{ width: "200px", marginLeft: "10px" }}
+              />
+            )}
 
-          {subCtrl.operationRule && (
+          {/* Operation Rule */}
+          {["int", "decimal", "bigint"].includes(subCtrl.dataType) && (
+            <button
+              type="button"
+              onClick={() => addOperationRuleToColumn(subCtrl.header, subIdx)}
+            >
+              ➕ Formula Rule
+            </button>
+          )}
+
+          {subCtrl.formula ? (
             <p style={{ color: "green" }}>
-              Formula: {subCtrl.label} = {subCtrl.operationRule.leftOperand}{" "}
-              {subCtrl.operationRule.operator}{" "}
-              {subCtrl.operationRule.rightOperand}
+              Formula: {subCtrl.label} = {subCtrl.formula}
             </p>
+          ) : (
+            subCtrl.operationRule && (
+              <p style={{ color: "green" }}>
+                Formula: {subCtrl.label} = {subCtrl.operationRule.leftOperand}{" "}
+                {subCtrl.operationRule.operator}{" "}
+                {subCtrl.operationRule.rightOperand}
+              </p>
+            )
           )}
 
           <button
@@ -360,7 +376,13 @@ const GridComponent = ({
           </button>
         </div>
       ))}
-
+      <button
+        className="sub-grid-Add-Field-Grid"
+        type="button"
+        onClick={addSubControl}
+      >
+        ➕ Add Field to Grid
+      </button>
       {/* Operation Rule Editor */}
       {selectedColumnIndex !== null && (
         <div style={{ marginTop: "20px", padding: "10px", background: "#eef" }}>

@@ -1,5 +1,5 @@
 // ControlRow.jsx
-import React from "react";
+import React, { useState } from "react";
 import EntnoGenerator from "./EntnoGenerator"; // adjust path
 import ConditionalControl from "./ConditionalControl"; // adjust path
 
@@ -15,7 +15,25 @@ const ControlRow = ({
   addControl,
   saberpmenu,
   handleLabelBlur,
+  controls, // ✅ Add this
 }) => {
+  const [showRuleEditor, setShowRuleEditor] = useState(false);
+  const [ruleDraft, setRuleDraft] = useState({
+    leftOperand: "",
+    operator: "+",
+    rightOperand: "",
+  });
+
+  const numericLabels =
+    controls
+      ?.filter(
+        (c) =>
+          ["int", "bigint", "decimal"].includes(c.dataType) &&
+          c.label?.trim() &&
+          c.id !== ctrl.id // prevent self-reference
+      )
+      .map((c) => c.label) || [];
+
   return (
     <div
       key={ctrl.id}
@@ -206,6 +224,42 @@ const ControlRow = ({
         <option value="false">visiblity: No</option>
         <option value="true">visiblity: Yes</option>
       </select>
+      {/* Manual Formula Field (Free Text) */}
+      {ctrl.controlType === "input" &&
+        ["int", "decimal", "bigint"].includes(ctrl.dataType) &&
+        !ctrl.operationRule && (
+          <input
+            type="text"
+            placeholder="Formula (e.g., qty * rate)"
+            value={ctrl.formula || ""}
+            onChange={(e) => updateControl(ctrl.id, "formula", e.target.value)}
+            style={{ width: "200px", marginLeft: "5px" }}
+          />
+        )}
+      {["int", "decimal", "bigint"].includes(ctrl.dataType) &&
+        !ctrl.formula && (
+          <button
+            type="button"
+            onClick={() => setShowRuleEditor(true)}
+            style={{ marginLeft: "10px" }}
+          >
+            ➕ Formula Rule
+          </button>
+        )}
+
+      {/* Optional Formula Display (Operation Rule or Manual) */}
+      {ctrl.formula ? (
+        <p style={{ color: "green" }}>
+          Formula: {ctrl.label} = {ctrl.formula}
+        </p>
+      ) : (
+        ctrl.operationRule && (
+          <p style={{ color: "green" }}>
+            Formula: {ctrl.label} = {ctrl.operationRule.leftOperand}{" "}
+            {ctrl.operationRule.operator} {ctrl.operationRule.rightOperand}
+          </p>
+        )
+      )}
 
       <button
         type="button"
@@ -239,6 +293,105 @@ const ControlRow = ({
           <option value={`below|dropdown`}>⬇️ Dropdown Below</option>
           <option value={`below|checkbox`}>⬇️ Checkbox Below</option>
         </select>
+        {showRuleEditor && (
+          <div
+            style={{
+              background: "#eef",
+              padding: "10px",
+              marginTop: "20px",
+              borderRadius: "5px",
+            }}
+          >
+            <h5>Build Operation Rule</h5>
+            <select
+              value={ruleDraft.leftOperand}
+              onChange={(e) =>
+                setRuleDraft({ ...ruleDraft, leftOperand: e.target.value })
+              }
+            >
+              <option value="">Left Operand</option>
+              {numericLabels.map((label) => (
+                <option key={label} value={label}>
+                  {label}
+                </option>
+              ))}
+            </select>
+
+            <select
+              value={ruleDraft.operator}
+              onChange={(e) =>
+                setRuleDraft({ ...ruleDraft, operator: e.target.value })
+              }
+              style={{ margin: "0 10px" }}
+            >
+              <option value="+">+</option>
+              <option value="-">-</option>
+              <option value="*">*</option>
+              <option value="/">/</option>
+            </select>
+
+            <select
+              value={ruleDraft.rightOperand}
+              onChange={(e) =>
+                setRuleDraft({ ...ruleDraft, rightOperand: e.target.value })
+              }
+            >
+              <option value="">Right Operand</option>
+              {numericLabels.map((label) => (
+                <option key={label} value={label}>
+                  {label}
+                </option>
+              ))}
+            </select>
+
+            <br />
+            <button
+              type="button"
+              onClick={() => {
+                updateControl(ctrl.id, "operationRule", ruleDraft);
+                setShowRuleEditor(false);
+                setRuleDraft({
+                  leftOperand: "",
+                  operator: "+",
+                  rightOperand: "",
+                });
+              }}
+              style={{ marginTop: "10px" }}
+            >
+              ✅ Save Rule
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowRuleEditor(false);
+                setRuleDraft({
+                  leftOperand: "",
+                  operator: "+",
+                  rightOperand: "",
+                });
+              }}
+              style={{ marginLeft: "10px", marginTop: "10px" }}
+            >
+              ❌ Cancel
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowRuleEditor(false);
+                setRuleDraft({
+                  leftOperand: "",
+                  operator: "+",
+                  rightOperand: "",
+                });
+                ctrl.operationRule = "";
+                ctrl.formula = "";
+              }}
+              style={{ marginLeft: "10px", marginTop: "10px" }}
+            >
+              ❌ Clear
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

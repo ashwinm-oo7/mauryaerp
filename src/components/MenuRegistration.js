@@ -125,6 +125,7 @@ const MenuRegistration = () => {
       readOnly: false,
       entnoFormat: "",
       autoGenerate: false,
+      operationRule: null,
       ...(type === "grid" && { subControls: [] }), // 💥 Add subControls array for grid
     };
 
@@ -487,6 +488,7 @@ const MenuRegistration = () => {
                   addControl={addControl}
                   saberpmenu={saberpmenu}
                   handleLabelBlur={handleLabelBlur}
+                  controls={formData.controls} // ✅ Add this line
                 />
 
                 {/* Grid Part */}

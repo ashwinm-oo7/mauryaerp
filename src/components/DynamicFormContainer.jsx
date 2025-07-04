@@ -14,11 +14,22 @@ const DynamicFormContainer = ({ formMeta }) => {
     setActiveTab("update");
   };
 
-  const handleFormSubmit = () => {
+  const handleFormSubmitwait = () => {
     setEditingData(null);
     setRefreshList((prev) => !prev);
     isDirty.current = false;
     setActiveTab("list");
+  };
+  const handleFormSubmit = (stayOnForm = false) => {
+    console.log("🧭 handleFormSubmit called, stayOnForm:", stayOnForm);
+
+    setRefreshList((prev) => !prev);
+    isDirty.current = false;
+
+    if (!stayOnForm) {
+      setEditingData(null);
+      setActiveTab("list");
+    }
   };
 
   const handleTabClick = (tab) => {
