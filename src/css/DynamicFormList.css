@@ -202,6 +202,7 @@
 .df-card-nav span {
   font-weight: 500;
   color: #4b5563;
+  font-size: 10px;
 }
 
 /* Grid View */
@@ -296,7 +297,11 @@ input:focus {
   .df-td {
     display: block;
   }
-
+select, input[type="text"] {
+ font-size: 10px;
+ width: 100%;
+ margin-top: 5px;
+}
   .df-tr {
     margin-bottom: 10px;
     background: white;
@@ -304,6 +309,10 @@ input:focus {
     border: 1px solid #e5e7eb;
     padding: 10px;
   }
+.df-card-field {
+    margin-bottom: 5px;
+    row-gap: 5px;
+}
 
   .df-td {
     position: relative;
@@ -330,7 +339,7 @@ input:focus {
   }
 
   .df-card {
-    padding: 16px;
+    padding: 3px;
     max-width: 100%;
   }
 
@@ -339,10 +348,23 @@ input:focus {
   }
 
   .df-card-field span {
-    font-size: 13px;
+    font-size: 10px;
   }
+.df-card-field span {
+    padding: 5px 5px;
+    font-size: 10px;
+    color: #111827;
+    width: 232px;
+}
 
   .vs-cards {
     grid-template-columns: 1fr;
+  }
+  .df-card-actions {
+  justify-content: space-between;
+  }
+  .df-card-nav button {
+    padding: 5px 5px;
+    gap: 8px;
   }
 }

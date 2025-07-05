@@ -45,8 +45,8 @@
 
 @media (max-width: 600px) {
   .dynamic-form-container {
-    padding: 10px 5px;
-    margin: 5px;
+    padding: 5px 5px;
+    margin: 0.1px;
   }
   
   .dynamic-form-tabs {
@@ -54,26 +54,22 @@
     gap: 5px;
   }
   
-element.style {
-}
-@media (max-width: 600px) {
-    .dynamic-form-tabs {
-        flex-direction: column;
-        gap: 5px;
-    }
-}
 .dynamic-form-tabs {
     gap: 5px;
     margin-bottom: 10px;
     border-bottom: 2px solid #e5e7eb;
+    margin: 0px 5px;
+    flex-direction: row;
+
 }
   .dynamic-form-tabs button {
     width: 100%;
     text-align: center;
         font-size: 7px;
-    border-radius: 6px;
+    border-radius: 10px;
     border-bottom: none;
     box-shadow: 0 2px 6px rgba(37, 99, 235, 0.2);
+    padding: 10px 5px;
   }
   
   .dynamic-form-tabs button.active {

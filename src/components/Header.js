@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import "../css/Header.css";
 import { MenuContext } from "../context/MenuContext";
 import { useAuth } from "../context/AuthContext";
+import MobileMenu from "./MobileMenu";
 
 const Header = () => {
   const {
@@ -11,6 +12,7 @@ const Header = () => {
     nestedSubmenusMap = {},
     forms = [],
   } = useContext(MenuContext);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const [openMenuId, setOpenMenuId] = useState(null);
   const [openSubmenuId, setOpenSubmenuId] = useState(null);
@@ -94,166 +96,179 @@ const Header = () => {
   };
 
   return (
-    <nav className="header">
-      <ul className="header__menu-bar">
-        {/* Static File Menu */}
-        <li
-          ref={(el) => (menuRefs.current["file"] = el)}
-          className="header__menu-item"
-          onClick={() => handleMenuClick("file")}
+    <>
+      <nav className="header">
+        <button
+          className="mobile-menu-button"
+          onClick={() => setMobileMenuOpen(true)}
         >
-          File
-          {openMenuId === "file" && (
-            <ul className="header__dropdown">
-              {["Developer", "Admin"].includes(userAccess) && (
-                <li className="header__dropdown-item">
-                  <Link
-                    to="/menuregistration"
-                    className="header__dropdown-link"
-                    onClick={() => setOpenMenuId(null)}
-                  >
-                    Menu Registration
-                  </Link>
-                </li>
-              )}
-              {["Developer", "Admin"].includes(userAccess) && (
-                <li className="header__dropdown-item">
-                  <Link
-                    to="/menuregistrationList"
-                    className="header__dropdown-link"
-                    onClick={() => setOpenMenuId(null)}
-                  >
-                    Menu RegistrationList
-                  </Link>
-                </li>
-              )}
-              {power && (
-                <li className="header__dropdown-item">
-                  <Link
-                    to="/dedfvudegfsfauhiuiytredcfvghjgfqsrdscfsfvssrtd"
-                    className="header__dropdown-link"
-                    onClick={() => setOpenMenuId(null)}
-                  >
-                    AdminPanel
-                  </Link>
-                </li>
-              )}
-              {power && (
-                <li className="header__dropdown-item">
-                  <Link
-                    to="/auditlogs"
-                    className="header__dropdown-link"
-                    onClick={() => setOpenMenuId(null)}
-                  >
-                    View Audit Logs
-                  </Link>
-                </li>
-              )}
+          ☰
+        </button>
 
-              {power && (
-                <li className="header__dropdown-item">
-                  <Link
-                    to="/backup"
-                    className="header__dropdown-link"
-                    onClick={() => setOpenMenuId(null)}
-                  >
-                    Backup
-                  </Link>
-                </li>
-              )}
-              {isAuthenticated && (
-                <li className="header__dropdown-item">
-                  <span
-                    onClick={() => {
-                      logout();
-                      setOpenMenuId(null);
-                    }}
-                    className="header__dropdown-link"
-                  >
-                    Logout
-                  </span>
-                </li>
-              )}
-              {!isAuthenticated && (
-                <li className="header__dropdown-item">
-                  <Link
-                    to="/register"
-                    className="header__dropdown-link"
-                    onClick={() => setOpenMenuId(null)}
-                  >
-                    Register
-                  </Link>
-                </li>
-              )}
-            </ul>
-          )}
-        </li>
-        {isAuthenticated && (
-          <>
-            {/* Dynamic Menus */}
-            {menus.map((menu) => {
-              // Top-level submenus for this menu container
-              const topSubmenus = submenus.filter(
-                (s) => s.MenuName === menu.bname
-              );
+        <ul className="header__menu-bar">
+          {/* Static File Menu */}
+          <li
+            ref={(el) => (menuRefs.current["file"] = el)}
+            className="header__menu-item"
+            onClick={() => handleMenuClick("file")}
+          >
+            File
+            {openMenuId === "file" && (
+              <ul className="header__dropdown">
+                {["Developer", "Admin"].includes(userAccess) && (
+                  <li className="header__dropdown-item">
+                    <Link
+                      to="/menuregistration"
+                      className="header__dropdown-link"
+                      onClick={() => setOpenMenuId(null)}
+                    >
+                      Menu Registration
+                    </Link>
+                  </li>
+                )}
+                {["Developer", "Admin"].includes(userAccess) && (
+                  <li className="header__dropdown-item">
+                    <Link
+                      to="/menuregistrationList"
+                      className="header__dropdown-link"
+                      onClick={() => setOpenMenuId(null)}
+                    >
+                      Menu RegistrationList
+                    </Link>
+                  </li>
+                )}
+                {power && (
+                  <li className="header__dropdown-item">
+                    <Link
+                      to="/dedfvudegfsfauhiuiytredcfvghjgfqsrdscfsfvssrtd"
+                      className="header__dropdown-link"
+                      onClick={() => setOpenMenuId(null)}
+                    >
+                      AdminPanel
+                    </Link>
+                  </li>
+                )}
+                {power && (
+                  <li className="header__dropdown-item">
+                    <Link
+                      to="/auditlogs"
+                      className="header__dropdown-link"
+                      onClick={() => setOpenMenuId(null)}
+                    >
+                      View Audit Logs
+                    </Link>
+                  </li>
+                )}
 
-              // Direct forms under the menu (using our classification "menu")
-              const directForms = forms.filter(
-                (form) =>
-                  form.formParentType === "menu" &&
-                  form.formParentName === menu.bname
-              );
+                {power && (
+                  <li className="header__dropdown-item">
+                    <Link
+                      to="/backup"
+                      className="header__dropdown-link"
+                      onClick={() => setOpenMenuId(null)}
+                    >
+                      Backup
+                    </Link>
+                  </li>
+                )}
+                {isAuthenticated && (
+                  <li className="header__dropdown-item">
+                    <span
+                      onClick={() => {
+                        logout();
+                        setOpenMenuId(null);
+                      }}
+                      className="header__dropdown-link"
+                    >
+                      Logout
+                    </span>
+                  </li>
+                )}
+                {!isAuthenticated && (
+                  <li className="header__dropdown-item">
+                    <Link
+                      to="/register"
+                      className="header__dropdown-link"
+                      onClick={() => setOpenMenuId(null)}
+                    >
+                      Register
+                    </Link>
+                  </li>
+                )}
+              </ul>
+            )}
+          </li>
+          {isAuthenticated && (
+            <>
+              {/* Dynamic Menus */}
+              {menus.map((menu) => {
+                // Top-level submenus for this menu container
+                const topSubmenus = submenus.filter(
+                  (s) => s.MenuName === menu.bname
+                );
 
-              return (
-                <li
-                  key={menu._id}
-                  ref={(el) => (menuRefs.current[menu._id] = el)}
-                  className="header__menu-item"
-                  onClick={() => handleMenuClick(menu._id)}
-                >
-                  {menu.bname}
-                  {openMenuId === menu._id && (
-                    <ul className="header__dropdown">
-                      {topSubmenus.map((submenu) => (
-                        <li
-                          key={submenu._id}
-                          className="header__dropdown-item has-nested"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSubmenuClick(submenu._id);
-                          }}
-                        >
-                          {submenu.bname} <span className="arrow">»</span>
-                          {openSubmenuId === submenu._id &&
-                            renderNestedSubmenus(submenu.bname, menu.bname)}
-                        </li>
-                      ))}
+                // Direct forms under the menu (using our classification "menu")
+                const directForms = forms.filter(
+                  (form) =>
+                    form.formParentType === "menu" &&
+                    form.formParentName === menu.bname
+                );
 
-                      {directForms.map((form) => (
-                        <li key={form._id} className="header__dropdown-item">
-                          <Link
-                            to={`/${form.bname
-                              .replace(/\s+/g, "-")
-                              .toLowerCase()}`}
-                            className="header__dropdown-link"
-                            onClick={() => {
-                              setOpenMenuId(null);
-                              setOpenSubmenuId(null);
+                return (
+                  <li
+                    key={menu._id}
+                    ref={(el) => (menuRefs.current[menu._id] = el)}
+                    className="header__menu-item"
+                    onClick={() => handleMenuClick(menu._id)}
+                  >
+                    {menu.bname}
+                    {openMenuId === menu._id && (
+                      <ul className="header__dropdown">
+                        {topSubmenus.map((submenu) => (
+                          <li
+                            key={submenu._id}
+                            className="header__dropdown-item has-nested"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleSubmenuClick(submenu._id);
                             }}
                           >
-                            {form.bname}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  )}
-                </li>
-              );
-            })}{" "}
-          </>
-        )}
-      </ul>
-    </nav>
+                            {submenu.bname} <span className="arrow">»</span>
+                            {openSubmenuId === submenu._id &&
+                              renderNestedSubmenus(submenu.bname, menu.bname)}
+                          </li>
+                        ))}
+
+                        {directForms.map((form) => (
+                          <li key={form._id} className="header__dropdown-item">
+                            <Link
+                              to={`/${form.bname
+                                .replace(/\s+/g, "-")
+                                .toLowerCase()}`}
+                              className="header__dropdown-link"
+                              onClick={() => {
+                                setOpenMenuId(null);
+                                setOpenSubmenuId(null);
+                              }}
+                            >
+                              {form.bname}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              })}{" "}
+            </>
+          )}
+        </ul>
+      </nav>
+      <MobileMenu
+        isOpen={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+      />
+    </>
   );
 };
 

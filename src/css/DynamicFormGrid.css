@@ -135,6 +135,10 @@
   .dynamic-grid-row {
     grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)) auto;
     font-size: 0.8rem;
+     gap: 5px;
+    padding: 5px;
+    border-radius: 10px;
+    margin-bottom: 5px;
   }
 
   .grid-cell-input,
@@ -146,5 +150,10 @@
   .grid-add-btn {
     font-size: 0.75rem;
     padding: 0.25rem 0.6rem;
+  }
+  .dynamic-grid-wrapper {
+      padding: 0.2rem;
+      margin: 1rem 0;
+
   }
 }

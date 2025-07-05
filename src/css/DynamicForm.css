@@ -137,9 +137,8 @@ form .mt-2 {
 /* === Mobile Responsive Enhancements === */
 @media (max-width: 768px) {
   form.space-y-4 {
-    grid-template-columns: 1fr; /* Stack fields vertically */
    padding: 3px;
-   gap: 5px;
+   display: contents;
   }
 
   .DynamicForm-form-buttons {
@@ -154,9 +153,10 @@ form .mt-2 {
   }
 
   .flex.items-center {
-    flex-direction: row;
+    flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: 2px;
+    background-color: aliceblue;
   }
 
   .DynamicForm-submit-button,
@@ -168,7 +168,7 @@ form .mt-2 {
   form input[type="text"],
   .dynamic-form-input,
   form select {
-    height: 25px;
+    height: 32px;
     font-size: 9px;
     padding: 0 5px;
   }
